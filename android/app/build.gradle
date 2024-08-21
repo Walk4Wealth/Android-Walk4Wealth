@@ -37,6 +37,23 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+
+    // setting flavor
+    flavorDimensions "walk_for_wealth"
+    productFlavors {
+        dev {
+            dimension "walk_for_wealth"
+            applicationIdSuffix ".dev"
+            resValue "string", "app_name", "W4W DEV"
+            versionNameSuffix ".dev"
+        }
+        prod {
+            dimension "walk_for_wealth"
+            // applicationIdSuffix ".dev"
+            resValue "string", "app_name", "W4W"
+            versionNameSuffix ".prod"
+        }
+    }
 }
 
 flutter {

@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+    // DEVELOPMENT
+      {
+        "name": "W4W DEV",
+        "request": "launch",
+        "type": "dart",
+        "program": "lib/main_dev.dart",
+        "args": [
+          "--flavor",
+          "dev"
+        ]
+      },
+    
+    // PRODUCTION
+      {
+        "name": "W4W",
+        "request": "launch",
+        "type": "dart",
+        "program": "lib/main_prod.dart",
+        "args": [
+          "--flavor",
+          "prod"
+        ]
+      }
+    ]
+  }
