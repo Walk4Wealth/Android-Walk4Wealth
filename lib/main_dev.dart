@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'app/app.dart';
-import 'falvor/flavor_type.dart';
-import 'falvor/flavor_config.dart';
+import 'flavor/flavor_type.dart';
+import 'flavor/flavor_config.dart';
 
 Future<void> main() async {
   final config = FlavorConfig(appName: 'W4W DEV', type: FlavorType.DEV);
