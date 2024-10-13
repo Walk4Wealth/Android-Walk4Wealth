@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../core/enum/request_state.dart';
+import '../../core/enums/request_state.dart';
 import '../../core/utils/strings/asset_img_string.dart';
 import '../../domain/entity/user.dart';
 import '../../domain/usecases/user/get_user.dart';

@@ -1,17 +1,13 @@
 // ignore_for_file: constant_identifier_names
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../core/enum/request_state.dart';
+import '../../../core/enums/request_state.dart';
 import '../../../core/utils/components/w_app_bar.dart';
-import '../../../core/utils/components/w_button.dart';
 import '../../providers/shop_provider.dart';
-import '../../providers/transaction_provider.dart';
-import '../../providers/user_provider.dart';
+import 'product_action_button.dart';
 import 'product_view.dart';
 
 class ProductPage extends StatefulWidget {
@@ -53,7 +49,13 @@ class _ProductPageState extends State<ProductPage> {
           return Consumer<ShopProvider>(
             builder: (_, c, child) {
               if (c.getProductByIdState == RequestState.SUCCESS) {
-                return Text(c.product?.name ?? '');
+                return Text(
+                  c.product?.name ?? '',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                );
               } else {
                 return Shimmer.fromColors(
                   baseColor: Colors.grey.shade300,
@@ -71,10 +73,6 @@ class _ProductPageState extends State<ProductPage> {
             },
           );
         }),
-        actions: [
-          GestureDetector(child: const Icon(Icons.more_vert)),
-          const SizedBox(width: 8),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async => _loadData(),
@@ -92,47 +90,7 @@ class _ProductPageState extends State<ProductPage> {
           ),
         ),
       ),
-      bottomSheet: Container(
-        padding: Platform.isIOS
-            ? EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom)
-            : null,
-        child: Row(
-          children: [
-            // poin saya
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Consumer<UserProvider>(
-                builder: (_, c, child) {
-                  return Text.rich(TextSpan(
-                    text: 'Poin Kamu ',
-                    children: [
-                      TextSpan(
-                        text: '\n${c.user?.totalPoints ?? 0}',
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
-                    ],
-                  ));
-                },
-              ),
-            ),
-
-            // button reedem poin
-            Flexible(
-              fit: FlexFit.tight,
-              child: WButton(
-                expand: true,
-                label: 'Tukar Poin',
-                onPressed: () {
-                  context.read<TransactionProvider>().showReedemDialog(context);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+      bottomSheet: const ProductActionButton(),
     );
   }
 

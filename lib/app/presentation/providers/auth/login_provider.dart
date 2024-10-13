@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../activity_provider.dart';
 import '../user_provider.dart';
 import '../../../core/routes/navigate.dart';
 import '../../../core/utils/dialog/w_dialog.dart';
@@ -14,90 +15,70 @@ class LoginProvider extends ChangeNotifier {
     required LoginUser loginUser,
   }) : _loginUser = loginUser;
 
-  // form key
-  final _formKey = GlobalKey<FormState>();
-  GlobalKey<FormState> get formKey => _formKey;
-
-  // properti email
   String? _emailValue;
   String? get emailValue => _emailValue;
 
-  final _emailController = TextEditingController();
-  TextEditingController get emailController => _emailController;
-
-  // properti password
   String? _passValue;
   String? get passValue => _passValue;
 
   bool _hidePassword = true;
   bool get hidePassword => _hidePassword;
 
-  final _passFNode = FocusNode();
-  FocusNode get passFNode => _passFNode;
-
-  final _passController = TextEditingController();
-  TextEditingController get passController => _passController;
-
-  bool _isError = false;
-  bool get isError => _isError;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passController.dispose();
-    _passFNode.dispose();
-    super.dispose();
-  }
+  bool get isValidSubmitted => (_emailValue != null) && (_passValue != null);
 
   //* login
-  void login(BuildContext context) async {
-    final email = _emailController.text.trim();
-    final password = _passController.text.trim();
-
-    if (!_formKey.currentState!.validate()) {
+  Future<void> login(
+    BuildContext context, {
+    required bool isValidate,
+    required String email,
+    required String password,
+  }) async {
+    // jika masih terdapat kesalahan pada form
+    if (!isValidate) {
       WDialog.snackbar(
         context,
         type: SnackBarType.ERROR,
         message: 'Perhatikan kesalahan pada Form',
       );
-    } else {
-      _setError(false);
-
-      // loading
-      WDialog.showLoading(context);
-
-      // login
-      final login = await _loginUser.call(email: email, password: password);
-
-      // state
-      login.fold(
-        (failure) {
-          _setError(true);
-          WDialog.closeLoading();
-          WDialog.snackbar(
-            context,
-            message: failure.message,
-            type: SnackBarType.ERROR,
-          );
-        },
-        (_) {
-          _setError(false);
-          WDialog.closeLoading();
-          // get data
-          context.read<UserProvider>().getProfile();
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            To.MAIN,
-            (route) => false,
-          );
-          WDialog.snackbar(context, message: 'Berhasil Masuk sebagai $email');
-        },
-      );
+      return;
     }
-  }
 
-  bool get isValidSubmitted {
-    return (_emailValue != null) && (_passValue != null);
+    // loading
+    WDialog.showLoading(context);
+
+    // login
+    final login = await _loginUser.call(email: email, password: password);
+
+    // state
+    login.fold(
+      (failure) {
+        WDialog.closeLoading();
+        WDialog.showDialog(
+          context,
+          icon: const Icon(Icons.warning_amber_rounded),
+          title: 'Terjadi kesalahan',
+          message: failure.message,
+          actions: [
+            DialogAction(
+              label: 'Coba lagi',
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
+      },
+      (_) {
+        WDialog.closeLoading();
+        // get data
+        context.read<UserProvider>().getProfile();
+        context.read<ActivityProvider>().getActivity();
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          To.MAIN,
+          (route) => false,
+        );
+        WDialog.snackbar(context, message: 'Berhasil Masuk sebagai $email');
+      },
+    );
   }
 
   String? validate(String? email) {
@@ -125,11 +106,6 @@ class LoginProvider extends ChangeNotifier {
 
   void togglePassword() {
     _hidePassword = !_hidePassword;
-    notifyListeners();
-  }
-
-  void _setError(bool error) {
-    _isError = error;
     notifyListeners();
   }
 }

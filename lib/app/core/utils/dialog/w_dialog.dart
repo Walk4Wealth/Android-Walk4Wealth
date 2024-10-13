@@ -1,10 +1,10 @@
 // ignore_for_file: constant_identifier_names
 
-import 'dart:io';
-
 import 'package:another_flushbar/flushbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../../enums/tracking_state.dart';
+import '../components/material_modal_dialog.dart';
 
 enum SnackBarType { ERROR, WARNING, NORMAL }
 
@@ -55,6 +55,31 @@ class WDialog {
     ).show(context);
   }
 
+  static void activitySnackbar(
+    BuildContext context,
+    String message,
+    TrackingState state,
+  ) {
+    bool isPause = (state == TrackingState.PAUSE);
+    final bgColor = isPause ? Colors.amber : Colors.green;
+    final textColor = isPause ? Colors.black : Colors.white;
+    Flushbar(
+      messageText: Text(
+        message.toUpperCase(),
+        textAlign: TextAlign.center,
+        style: Theme.of(context)
+            .textTheme
+            .titleMedium
+            ?.copyWith(color: textColor, fontWeight: FontWeight.w600),
+      ),
+      flushbarStyle: FlushbarStyle.GROUNDED,
+      flushbarPosition: FlushbarPosition.TOP,
+      duration: const Duration(seconds: 3),
+      animationDuration: const Duration(milliseconds: 500),
+      backgroundColor: bgColor,
+    ).show(context);
+  }
+
   static void showLoading(
     BuildContext context, {
     String message = 'Memuat ...',
@@ -102,41 +127,57 @@ class WDialog {
     }
   }
 
-  static void showDialog(
+  static Future<T?> showDialog<T extends Object?>(
     BuildContext context, {
     required String message,
-    Widget? title,
-    bool withAnimation = true,
-    List<Widget> actions = const <Widget>[],
-  }) {
-    showGeneralDialog(
+    String? title,
+    Widget? icon,
+    bool dismissible = true,
+    bool canPop = true,
+    List<DialogAction> actions = const <DialogAction>[],
+  }) async {
+    return await showGeneralDialog(
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: dismissible,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      transitionBuilder: (withAnimation)
-          ? (c, a1, a2, child) {
-              return ScaleTransition(
-                scale: a1,
-                child: child,
-              );
-            }
-          : null,
-      pageBuilder: (c, a1, a2) {
-        if (Platform.isIOS) {
-          return CupertinoAlertDialog(
-            title: title,
-            content: Text(message),
-            actions: actions,
-          );
-        }
-        return AlertDialog(
-          elevation: 0,
-          content: Text(message),
+      transitionBuilder: (_, a1, __, child) =>
+          ScaleTransition(scale: a1, child: child),
+      pageBuilder: (c, a1, a2) => PopScope(
+        canPop: canPop,
+        child: MaterialModalDialog(
           title: title,
-          shadowColor: Colors.transparent,
+          icon: icon,
+          message: message,
           actions: actions,
-        );
-      },
+        ),
+      ),
+    );
+  }
+}
+
+class DialogAction extends StatelessWidget {
+  const DialogAction({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.color,
+    this.isDefaultAction = false,
+  });
+
+  final String label;
+  final void Function() onPressed;
+  final bool isDefaultAction;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialDialogAction(
+      label: label,
+      color: color,
+      type: isDefaultAction
+          ? MaterialDialogActionType.FILLED
+          : MaterialDialogActionType.OUTLINED,
+      onPressed: onPressed,
     );
   }
 }

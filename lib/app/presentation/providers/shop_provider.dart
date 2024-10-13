@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-import '../../core/enum/request_state.dart';
+import '../../core/enums/request_state.dart';
 import '../../domain/entity/product.dart';
 import '../../domain/entity/vendor.dart';
 import '../../domain/usecases/point/get_all_product.dart';

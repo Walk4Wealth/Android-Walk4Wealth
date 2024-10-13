@@ -1,24 +1,22 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../core/enum/request_state.dart';
-import '../../../core/routes/navigate.dart';
+import '../../../core/enums/request_state.dart';
 import '../../../core/utils/components/to_top_button.dart';
-import '../../../core/utils/strings/asset_img_string.dart';
-import '../../providers/transaction_provider.dart';
+import '../../../core/utils/components/w_app_bar.dart';
+import '../../../core/utils/components/w_button.dart';
+import '../../providers/activity_provider.dart';
+import '../../widgets/activity_card.dart';
 
-class HistoryView extends StatefulWidget {
-  const HistoryView({super.key});
+class AllActivitiesPage extends StatefulWidget {
+  const AllActivitiesPage({super.key});
 
   @override
-  State<HistoryView> createState() => _HistoryViewState();
+  State<AllActivitiesPage> createState() => _AllActivitiesPageState();
 }
 
-class _HistoryViewState extends State<HistoryView> {
+class _AllActivitiesPageState extends State<AllActivitiesPage> {
   final _scrollController = ScrollController();
   bool _showToTop = false;
 
@@ -26,7 +24,7 @@ class _HistoryViewState extends State<HistoryView> {
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData);
   }
 
   @override
@@ -36,10 +34,12 @@ class _HistoryViewState extends State<HistoryView> {
     super.dispose();
   }
 
+  //* load data
   void _loadData() async {
-    await context.read<TransactionProvider>().getHistoryTransaction();
+    await context.read<ActivityProvider>().getActivity();
   }
 
+  //* scroll listener
   void _scrollListener() {
     if (_scrollController.offset >= 300) {
       setState(() => _showToTop = true);
@@ -48,6 +48,7 @@ class _HistoryViewState extends State<HistoryView> {
     }
   }
 
+  //* to top
   void _toTop() {
     _scrollController.animateTo(
       0.0,
@@ -59,89 +60,63 @@ class _HistoryViewState extends State<HistoryView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async => _loadData(),
-        child: Consumer<TransactionProvider>(
-          builder: (_, c, child) {
-            if (c.getHistoryTransactionState == RequestState.LOADING) {
-              return _loadingState();
-            } else if (c.getHistoryTransactionState == RequestState.SUCCESS) {
-              if (c.histories.isEmpty) {
-                return _emptyState();
-              } else {
-                return _historyList(c);
-              }
-            } else {
-              return _errorState(c.errorMessage ?? 'State tidak valid');
-            }
-          },
-        ),
-      ),
+      appBar: const WAppBar(title: 'Semua aktivitas'),
+      body: Consumer<ActivityProvider>(builder: (ctx, c, _) {
+        if (c.getActivityState == RequestState.FAILURE) {
+          return _failureState(c.errorMessage!);
+        }
+        if (c.getActivityState == RequestState.SUCCESS) {
+          return _activitiesListView(context, c);
+        }
+        return _loadingState();
+      }),
       floatingActionButton: _showToTop ? ToTopButton(_toTop) : null,
     );
   }
 
-  Widget _historyList(TransactionProvider c) {
-    return ListView.separated(
-      shrinkWrap: true,
-      itemCount: c.histories.length,
-      separatorBuilder: (c, i) => const SizedBox(height: 8),
-      padding: const EdgeInsets.all(16),
-      itemBuilder: (context, index) {
-        final history = c.histories[index];
-        return ListTile(
-          tileColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          leading: CachedNetworkImage(
-            imageUrl: history.product.productImg ?? '',
-            errorWidget: (c, u, e) => Image.asset(AssetImg.error),
-            fit: BoxFit.cover,
-          ),
-          title: Text(history.product.name ?? ''),
-          subtitle: Text(
-            DateFormat('dd/MM/yyyy HH:mm:ss a', 'id').format(
-              DateTime.parse(history.timeStamp),
-            ),
-          ),
-          titleTextStyle: Theme.of(context)
-              .textTheme
-              .titleMedium
-              ?.copyWith(fontWeight: FontWeight.w500),
-          trailing: Text('${history.product.pointsRequired ?? 0} Poin'),
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              To.TRANSACTION_DETAIL,
-              arguments: history.product,
-            );
-          },
-        );
-      },
-    );
-  }
+  Widget _activitiesListView(BuildContext context, ActivityProvider c) {
+    return RefreshIndicator(
+      onRefresh: () async => _loadData(),
+      child: ListView.builder(
+        controller: _scrollController,
+        itemCount: c.activities.length,
+        padding: const EdgeInsets.all(16),
+        itemBuilder: (context, index) {
+          final activity = c.activities[index];
+          final isFirst = (index == 0);
+          final isOne = (c.activities.length == 1);
+          final isLast = (index == c.activities.length - 1);
 
-  Widget _errorState(String message) {
-    return Center(
-      child: Text(
-        'Terjadi kesalahan [$message]',
-        textAlign: TextAlign.center,
+          return ActivityCard(
+            activity,
+            isFirst: isFirst,
+            isLast: isLast,
+            isOne: isOne,
+          );
+        },
       ),
     );
   }
 
-  Widget _emptyState() {
-    return const SizedBox(
+  Widget _failureState(String message) {
+    return SizedBox(
       width: double.infinity,
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Iconsax.box),
-            SizedBox(height: 8),
-            Text('Anda belum pernah melakukan transaksi'),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            WButton(
+              padding: 12,
+              label: 'Coba lagi',
+              type: ButtonType.OUTLINED,
+              onPressed: _loadData,
+            ),
           ],
         ),
       ),
@@ -150,7 +125,7 @@ class _HistoryViewState extends State<HistoryView> {
 
   Widget _loadingState() {
     return ListView.separated(
-      itemCount: 10,
+      itemCount: 6,
       shrinkWrap: true,
       padding: const EdgeInsets.all(16),
       separatorBuilder: (c, i) => const SizedBox(height: 16),
@@ -162,8 +137,8 @@ class _HistoryViewState extends State<HistoryView> {
               baseColor: Colors.grey.shade300,
               highlightColor: Colors.grey.shade100,
               child: Container(
-                width: 45,
-                height: 45,
+                width: 50,
+                height: 50,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey.shade300,
@@ -178,6 +153,19 @@ class _HistoryViewState extends State<HistoryView> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Shimmer.fromColors(
+                      baseColor: Colors.grey.shade300,
+                      highlightColor: Colors.grey.shade100,
+                      child: Container(
+                        width: size.maxWidth * 0.8,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     Shimmer.fromColors(
                       baseColor: Colors.grey.shade300,
                       highlightColor: Colors.grey.shade100,

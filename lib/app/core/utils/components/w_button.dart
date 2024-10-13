@@ -58,7 +58,7 @@ class WButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         icon ?? const SizedBox.shrink(),
-        SizedBox(width: (icon != null) ? 16 : null),
+        SizedBox(width: (icon != null) ? 8 : null),
         Text(
           label,
           textAlign: TextAlign.center,

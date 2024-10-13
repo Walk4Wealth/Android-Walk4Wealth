@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../../../injection.dart';
 import '../../providers/auth/register_provider.dart';
-import 'height_view.dart';
+import 'register_height_view.dart';
 import 'register_view.dart';
-import 'weight_view.dart';
+import 'register_weight_view.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -15,14 +15,18 @@ class RegisterPage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => locator<RegisterProvider>(),
       child: Scaffold(
-        body: SafeArea(
+        body: Padding(
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top + 16,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // back arrow and progress bar
+              //* back arrow and progress bar
               Consumer<RegisterProvider>(
                 builder: (_, c, child) {
                   return _buildHeader(
+                    context,
                     totalViews: c.totalViews,
                     currentView: (c.indexView + 1),
                     backOnTap: () => Navigator.pop(context),
@@ -31,7 +35,7 @@ class RegisterPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // view registrasi (input )
+              //* view registrasi
               Expanded(
                 child: Consumer<RegisterProvider>(
                   builder: (_, c, child) {
@@ -41,8 +45,8 @@ class RegisterPage extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       children: const [
                         RegisterView(),
-                        HeightView(),
-                        WeightView(),
+                        RegisterHeightView(),
+                        RegisterWeightView(),
                       ],
                     );
                   },
@@ -55,7 +59,9 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader({
+  //* header
+  Widget _buildHeader(
+    BuildContext context, {
     required int currentView,
     required int totalViews,
     required void Function() backOnTap,
@@ -64,7 +70,7 @@ class RegisterPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          // tombol back
+          //* tombol back
           Material(
             color: Colors.grey.shade300,
             borderRadius: BorderRadius.circular(100),
@@ -79,7 +85,7 @@ class RegisterPage extends StatelessWidget {
           ),
           const SizedBox(width: 16),
 
-          // progress bar
+          //* progress bar
           Flexible(
             child: LayoutBuilder(
               builder: (_, size) {
@@ -112,13 +118,10 @@ class RegisterPage extends StatelessWidget {
           ),
           const SizedBox(width: 16),
 
-          // text langkah
+          //* text langkah
           Text(
             'Langkah $currentView/$totalViews',
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.black87,
-            ),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
       ),

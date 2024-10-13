@@ -20,7 +20,7 @@ extension ErrorTypeExtension on ErrorType {
       case ErrorType.DEFAULT:
         return AppException(-1, 'Kesahalan sistem internal [$message]');
       case ErrorType.BAD_RESPONSE:
-        return AppException(code ?? 400, message ?? '');
+        return AppException(code ?? 0, message ?? 'Unknown Error');
       case ErrorType.CANCEL:
         return AppException(-2, 'Permintaan Dibatalkan, coba lagi nanti');
       case ErrorType.CONNECTION_TIMEOUT:

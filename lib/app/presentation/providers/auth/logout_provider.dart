@@ -1,12 +1,14 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/cache/cache_manager.dart';
+import '../../../core/enums/tracking_state.dart';
 import '../../../core/routes/navigate.dart';
 import '../../../core/utils/dialog/w_dialog.dart';
 import '../../../domain/usecases/auth/logout_user.dart';
 import '../../../domain/usecases/user/delete_user.dart';
+import '../tracking_provider.dart';
 
 class LogoutProvider extends ChangeNotifier {
   final LogoutUser _logoutUser;
@@ -31,7 +33,18 @@ class LogoutProvider extends ChangeNotifier {
         logout.fold(
           (failure) {
             WDialog.closeLoading();
-            WDialog.snackbar(context, message: failure.message);
+            WDialog.showDialog(
+              context,
+              title: 'Terjadi Kesalahan',
+              message: failure.message,
+              icon: const Icon(Iconsax.warning_2),
+              actions: [
+                DialogAction(
+                  label: 'Kembali',
+                  onPressed: () => Navigator.pop(context),
+                )
+              ],
+            );
           },
           (_) {
             // semua data penyimpanan lokal seperti cache dan shared prefs akan dihapus
@@ -53,24 +66,45 @@ class LogoutProvider extends ChangeNotifier {
   }
 
   void logoutPopUp(BuildContext context) {
-    WDialog.showDialog(
-      context,
-      withAnimation: Platform.isAndroid ? true : false,
-      title: const Text('Logout'),
-      message: 'Anda yakin ingin keluar dari akun ini?',
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Batal'),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-            _logout(context);
-          },
-          child: const Text('Ya'),
-        ),
-      ],
-    );
+    final trackingC = context.read<TrackingProvider>();
+
+    // izinkan logout ketika aktivitas sedang tidak dilakukan atau di stop
+    if (trackingC.trackingState == TrackingState.INIT ||
+        trackingC.trackingState == TrackingState.STOP) {
+      WDialog.showDialog(
+        context,
+        title: 'Permintaan Keluar',
+        message: 'Apakah kamu yakin ingin keluar dari akun ini?',
+        icon: const Icon(Iconsax.logout),
+        actions: [
+          DialogAction(
+            label: 'Batal',
+            onPressed: () => Navigator.pop(context),
+          ),
+          DialogAction(
+            label: 'Keluar',
+            isDefaultAction: true,
+            onPressed: () {
+              Navigator.pop(context);
+              _logout(context);
+            },
+          )
+        ],
+      );
+    } else {
+      WDialog.showDialog(
+        context,
+        title: 'Permintaan Keluar',
+        message:
+            'Maaf kamu tidak bisa keluar dari akun ini saat aktivitas sedang berjalan',
+        icon: const Icon(Iconsax.smileys),
+        actions: [
+          DialogAction(
+            label: 'Kembali',
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      );
+    }
   }
 }

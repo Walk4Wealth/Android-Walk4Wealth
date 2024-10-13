@@ -6,7 +6,9 @@ import 'core/routes/navigate.dart';
 import '../flavor/flavor_config.dart';
 import 'core/setup/theme/w_theme.dart';
 import 'core/setup/localization/localization.dart';
+import 'presentation/providers/activity_provider.dart';
 import 'presentation/providers/auth/load_provider.dart';
+import 'presentation/providers/auth/login_provider.dart';
 import 'presentation/providers/auth/logout_provider.dart';
 import 'presentation/providers/shop_provider.dart';
 import 'presentation/providers/tracking_provider.dart';
@@ -21,6 +23,9 @@ Future<Widget> initializeApp(FlavorConfig config) async {
   return App(config);
 }
 
+// global navigator key
+final navigatorKey = GlobalKey<NavigatorState>();
+
 class App extends StatelessWidget {
   const App(this.config, {super.key});
 
@@ -31,17 +36,20 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => locator<LoadProvider>()),
+        ChangeNotifierProvider(create: (_) => locator<LoginProvider>()),
         ChangeNotifierProvider(create: (_) => locator<UserProvider>()),
         ChangeNotifierProvider(create: (_) => locator<LogoutProvider>()),
         ChangeNotifierProvider(create: (_) => locator<ShopProvider>()),
         ChangeNotifierProvider(create: (_) => locator<TransactionProvider>()),
         ChangeNotifierProvider(create: (_) => locator<TrackingProvider>()),
+        ChangeNotifierProvider(create: (_) => locator<ActivityProvider>()),
       ],
       child: ChangeNotifierProvider(
         create: (_) => locator<LoadProvider>(),
         child: MaterialApp(
           theme: WTheme.theme,
           themeMode: WTheme.themeMode,
+          navigatorKey: navigatorKey,
           locale: Localization.locale,
           debugShowCheckedModeBanner: false,
           initialRoute: Navigate.initialPage,

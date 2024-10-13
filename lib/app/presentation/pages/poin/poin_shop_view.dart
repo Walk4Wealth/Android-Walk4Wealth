@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../core/enum/request_state.dart';
+import '../../../core/enums/request_state.dart';
 import '../../../core/routes/navigate.dart';
 import '../../../core/utils/components/to_top_button.dart';
 import '../../providers/shop_provider.dart';

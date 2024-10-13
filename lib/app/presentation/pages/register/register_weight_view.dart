@@ -5,8 +5,8 @@ import 'package:wheel_chooser/wheel_chooser.dart';
 import '../../../core/utils/components/w_button.dart';
 import '../../providers/auth/register_provider.dart';
 
-class HeightView extends StatelessWidget {
-  const HeightView({super.key});
+class RegisterWeightView extends StatelessWidget {
+  const RegisterWeightView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class HeightView extends StatelessWidget {
           FittedBox(
             child: RichText(
               text: const TextSpan(
-                text: 'Berapa Tinggi Kamu ',
+                text: 'Berapa Berat Kamu ',
                 style: TextStyle(
                   fontSize: 32,
                   color: Colors.black,
@@ -26,7 +26,7 @@ class HeightView extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: '(Cm)',
+                    text: '(Kg)',
                     style: TextStyle(
                       fontSize: 24,
                       color: Colors.black45,
@@ -44,10 +44,10 @@ class HeightView extends StatelessWidget {
             child: Consumer<RegisterProvider>(
               builder: (_, c, child) {
                 return WheelChooser.integer(
+                  onValueChanged: (weight) => c.setWeight(weight),
                   maxValue: 200,
-                  minValue: 120,
-                  initValue: c.currentHeight,
-                  onValueChanged: (height) => c.setHeight(height),
+                  minValue: 40,
+                  initValue: c.currentWeight,
                   selectTextStyle: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -59,7 +59,6 @@ class HeightView extends StatelessWidget {
           const SizedBox(height: 16),
 
           // button previous
-
           Row(
             children: [
               WButton(
@@ -72,8 +71,10 @@ class HeightView extends StatelessWidget {
               Flexible(
                 child: WButton(
                   expand: true,
-                  label: 'Selanjutnya',
-                  onPressed: context.read<RegisterProvider>().nextPage,
+                  label: 'Selesai',
+                  onPressed: () {
+                    context.read<RegisterProvider>().register(context);
+                  },
                 ),
               ),
             ],

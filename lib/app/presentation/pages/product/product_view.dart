@@ -41,31 +41,30 @@ class _ProductViewState extends State<ProductView> {
     return Column(
       children: [
         // foto produk
-        Container(
+        SizedBox(
           width: double.infinity,
           height: 350,
-          color: Colors.black,
           child: Stack(
             children: [
-              // foto
+              //* foto
               SizedBox(
                 width: double.infinity,
+                height: 350,
                 child: CachedNetworkImage(
                   imageUrl: widget.product?.productImg ?? '',
-                  errorWidget: (_, u, e) => Image.asset(
-                    AssetImg.error,
-                  ),
+                  errorWidget: (_, u, e) => Image.asset(AssetImg.error),
                   fit: BoxFit.cover,
                 ),
               ),
 
-              // status
+              // status & masa aktif
               Positioned(
                 bottom: 8,
                 right: 8,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    //* masa aktif
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -84,6 +83,8 @@ class _ProductViewState extends State<ProductView> {
                       }),
                     ),
                     const SizedBox(width: 4),
+
+                    //* status
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -102,7 +103,7 @@ class _ProductViewState extends State<ProductView> {
           ),
         ),
 
-        // konten produk
+        //* konten produk
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 16,
@@ -111,11 +112,11 @@ class _ProductViewState extends State<ProductView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // poin
+              // poin & icon favorite
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // poin
+                  //* poin
                   Text('${widget.product?.pointsRequired ?? 0} Poin',
                       style:
                           Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -123,7 +124,7 @@ class _ProductViewState extends State<ProductView> {
                                 fontWeight: FontWeight.w500,
                               )),
 
-                  // icon like
+                  //* icon favorite
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     transitionBuilder: (chld, a) {
@@ -142,20 +143,22 @@ class _ProductViewState extends State<ProductView> {
               ),
               const SizedBox(height: 4),
 
-              // nama produk
+              // nama produk & stok
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // nama
+                  //* nama produk
                   Flexible(
                     fit: FlexFit.tight,
                     child: Text(
                       widget.product?.name ?? '',
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  // stok
+
+                  //* stok
                   Text(
                     '${widget.product?.stock ?? 0} Stok Tersedia',
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -164,14 +167,14 @@ class _ProductViewState extends State<ProductView> {
               ),
               const SizedBox(height: 4),
 
-              // deskripsi
+              //* deskripsi
               Text(
                 widget.product?.description ?? '',
                 textAlign: TextAlign.justify,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
 
-              // terms
+              //* terms
               Theme(
                 data: Theme.of(context).copyWith(
                   dividerColor: Colors.transparent,
@@ -194,50 +197,61 @@ class _ProductViewState extends State<ProductView> {
               ),
               const SizedBox(height: 8),
 
-              // toko
+              //* toko
               Consumer<ShopProvider>(builder: (_, c, child) {
-                return Row(
-                  children: [
-                    // logo vendor
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey),
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      //* logo vendor
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: CircleAvatar(
+                          radius: 30,
+                          backgroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                          backgroundImage: CachedNetworkImageProvider(
+                              c.vendor?.logoUrl ?? ''),
+                        ),
                       ),
-                      child: CircleAvatar(
-                        radius: 30,
-                        backgroundColor:
-                            Theme.of(context).scaffoldBackgroundColor,
-                        backgroundImage:
-                            CachedNetworkImageProvider(c.vendor?.logoUrl ?? ''),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
+                      const SizedBox(width: 16),
 
-                    // nama toko
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: Text(
-                        c.vendor?.name ?? '',
-                        overflow: TextOverflow.ellipsis,
+                      //* nama toko
+                      Flexible(
+                        fit: FlexFit.tight,
+                        child: Text(
+                          c.vendor?.name ?? '',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
+                      const SizedBox(width: 16),
 
-                    // button kunjungi
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          To.VENDOR,
-                          arguments: c.vendor?.id ?? 0,
-                        );
-                      },
-                      child: const Text('Kunjungi'),
-                    ),
-                  ],
+                      //* button kunjungi
+                      OutlinedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            To.VENDOR,
+                            arguments: c.vendor?.id ?? 0,
+                          );
+                        },
+                        child: const Text('Kunjungi'),
+                      ),
+                    ],
+                  ),
                 );
               }),
+              const SizedBox(height: 200),
             ],
           ),
         ),

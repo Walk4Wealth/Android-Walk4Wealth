@@ -1,23 +1,29 @@
 import 'package:get_it/get_it.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 
 import 'app/core/cache/cache_manager.dart';
 import 'app/core/db/local_db.dart';
 import 'app/core/network/device_connection.dart';
 import 'app/core/network/dio_client.dart';
 import 'app/core/setup/device/device_setup.dart';
+import 'app/data/datasources/activity/activity_remote_datasource.dart';
 import 'app/data/datasources/auth/auth_local_datasource.dart';
 import 'app/data/datasources/auth/auth_remote_datasource.dart';
 import 'app/data/datasources/point/point_local_datasource.dart';
 import 'app/data/datasources/point/point_remote_datasource.dart';
 import 'app/data/datasources/user/user_local_datasource.dart';
 import 'app/data/datasources/user/user_remote_datasource.dart';
+import 'app/data/repositories_impl/activity_repository_impl.dart';
 import 'app/data/repositories_impl/auth_repository_impl.dart';
 import 'app/data/repositories_impl/point_repository_impl.dart';
 import 'app/data/repositories_impl/user_repository_impl.dart';
+import 'app/domain/repositories/activity_repository.dart';
 import 'app/domain/repositories/auth_repository.dart';
 import 'app/domain/repositories/point_repository.dart';
 import 'app/domain/repositories/user_repository.dart';
+import 'app/domain/usecases/activity/create_activity.dart';
+import 'app/domain/usecases/activity/get_activity.dart';
 import 'app/domain/usecases/auth/check_authentication.dart';
 import 'app/domain/usecases/auth/get_token.dart';
 import 'app/domain/usecases/auth/login_user.dart';
@@ -32,6 +38,7 @@ import 'app/domain/usecases/point/reedem_point.dart';
 import 'app/domain/usecases/user/delete_user.dart';
 import 'app/domain/usecases/user/get_user.dart';
 import 'app/domain/usecases/user/update_user.dart';
+import 'app/presentation/providers/activity_provider.dart';
 import 'app/presentation/providers/auth/load_provider.dart';
 import 'app/presentation/providers/auth/login_provider.dart';
 import 'app/presentation/providers/auth/logout_provider.dart';
@@ -50,7 +57,7 @@ Future<void> initDependencies() async {
   _authDependencies();
   _profileDependencies();
   _pointDependencies();
-  _trackingDependencies();
+  _activityDependencies();
 }
 
 //* global
@@ -58,6 +65,7 @@ Future<void> _globalDependencies() async {
   locator.registerLazySingleton(() => DioClient());
   locator.registerLazySingleton(() => CacheManager());
   locator.registerLazySingleton(() => const Distance());
+  locator.registerLazySingleton(() => Location());
   locator.registerLazySingleton(() => DeviceConnection());
   locator.registerLazySingletonAsync<Db>(() async {
     final db = Db();
@@ -221,9 +229,46 @@ void _pointDependencies() {
   );
 }
 
-//* tracking
-void _trackingDependencies() {
+//* activity
+void _activityDependencies() {
+  // provider
   locator.registerFactory(
-    () => TrackingProvider(distance: locator<Distance>()),
+    () => TrackingProvider(
+      distance: locator<Distance>(),
+      location: locator<Location>(),
+      db: locator<Db>(),
+      connection: locator<DeviceConnection>(),
+    ),
+  );
+  locator.registerFactory(
+    () => ActivityProvider(
+      createActivity: locator<CreateActivity>(),
+      getActivity: locator<GetActivity>(),
+      updateUser: locator<UpdateUser>(),
+    ),
+  );
+
+  // use case
+  locator.registerLazySingleton(
+    () => GetActivity(repository: locator<ActivityRepository>()),
+  );
+  locator.registerLazySingleton(
+    () => CreateActivity(repository: locator<ActivityRepository>()),
+  );
+
+  // repository
+  locator.registerLazySingleton<ActivityRepository>(
+    () => ActivityRepositoryImpl(
+      remoteDatasource: locator<ActivityRemoteDatasource>(),
+    ),
+  );
+
+  // datasource
+  locator.registerLazySingleton<ActivityRemoteDatasource>(
+    () => ActivityRemoteDatasourceImpl(
+      connection: locator<DeviceConnection>(),
+      dioClient: locator<DioClient>(),
+      getToken: locator<GetToken>(),
+    ),
   );
 }

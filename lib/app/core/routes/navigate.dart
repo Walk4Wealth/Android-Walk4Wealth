@@ -2,8 +2,13 @@
 
 import 'package:flutter/material.dart';
 
+import '../../domain/entity/activity.dart';
 import '../../domain/entity/product.dart';
+import '../../presentation/pages/activity/activity_detail_page.dart';
 import '../../presentation/pages/activity/activity_page.dart';
+import '../../presentation/pages/activity/activity_save_confirm_page.dart';
+import '../../presentation/pages/activity/activity_save_page.dart';
+import '../../presentation/pages/activity/all_activities_page.dart';
 import '../../presentation/pages/favorite_page.dart';
 import '../../presentation/pages/login_page.dart';
 import '../../presentation/pages/profile/profile_detail_page.dart';
@@ -12,9 +17,9 @@ import '../../presentation/pages/splash_page.dart';
 import '../../presentation/pages/main_page.dart';
 import '../../presentation/pages/on_boarding/on_boarding_page.dart';
 import '../../presentation/pages/product/product_page.dart';
-import '../../presentation/pages/transaction/reedem_status_page.dart';
+import '../../presentation/pages/transaction/transaction_status_page.dart';
 import '../../presentation/pages/transaction/transaction_detail_page.dart';
-import '../../presentation/pages/vendor/vendor_page.dart';
+import '../../presentation/pages/vendor_page.dart';
 
 class To {
   To._();
@@ -24,12 +29,16 @@ class To {
   static const LOGIN = '/login';
   static const REGISTER = '/register';
   static const MAIN = '/main';
-  static const ACTIVITY = '/aktivitas';
-  static const DETAIL_PROFIL = '/profile-detail';
+  static const ACTIVITY = '/activities';
+  static const ACTIVITY_DETAIL = '/activity-detail';
+  static const ALL_ACTIVITIES = '/all-activities';
+  static const ACTIVITY_SAVE = '/activity-save';
+  static const ACTIVITY_SAVE_CONFIRM = '/activity-save-confirm';
+  static const PROFIL_DETAIL = '/profile-detail';
   static const PRODUCT = '/product';
   static const VENDOR = '/vendor';
-  static const REEDEM_STATUS = '/transaction';
   static const FAVORITE = '/favorite';
+  static const TRANSACTION_STATUS = '/transaction-status';
   static const TRANSACTION_DETAIL = '/transaction-detail';
 }
 
@@ -57,7 +66,16 @@ class Navigate {
           const ActivityPage(),
           style: NavigateStyle.SLIDE,
         );
-      case To.DETAIL_PROFIL:
+      case To.ACTIVITY_DETAIL:
+        final activity = settings.arguments as Activity;
+        return _createRoute(ActivityDetailPage(activity));
+      case To.ACTIVITY_SAVE:
+        return _createRoute(const ActivitySavePage());
+      case To.ALL_ACTIVITIES:
+        return _createRoute(const AllActivitiesPage());
+      case To.ACTIVITY_SAVE_CONFIRM:
+        return _createRoute(const ActivitySaveConfirmPage());
+      case To.PROFIL_DETAIL:
         return _createRoute(const ProfileDetailPage());
       case To.PRODUCT:
         final data = settings.arguments as Map<String, int>;
@@ -68,8 +86,8 @@ class Navigate {
       case To.VENDOR:
         final vendorId = settings.arguments as int;
         return _createRoute(VendorPage(vendorId: vendorId));
-      case To.REEDEM_STATUS:
-        return _createRoute(const ReedemStatusPage());
+      case To.TRANSACTION_STATUS:
+        return _createRoute(const TransactionStatusPage());
       case To.FAVORITE:
         return _createRoute(const FavoritePage());
       case To.TRANSACTION_DETAIL:

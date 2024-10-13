@@ -29,8 +29,8 @@ class AppException implements Exception {
         return ErrorType.CANCEL.getException();
       case DioExceptionType.badResponse:
         return ErrorType.BAD_RESPONSE.getException(
-          code: error.response?.statusCode ?? 400,
-          message: error.response?.data['message'] ?? '',
+          code: error.response?.statusCode,
+          message: error.response?.data['message'],
         );
       default:
         return AppException(

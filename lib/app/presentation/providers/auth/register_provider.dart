@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../activity_provider.dart';
 import '../user_provider.dart';
 import '../../../core/routes/navigate.dart';
 import '../../../core/utils/dialog/w_dialog.dart';
@@ -86,7 +87,18 @@ class RegisterProvider extends ChangeNotifier {
     register.fold(
       (failure) {
         WDialog.closeLoading();
-        WDialog.snackbar(context, message: failure.message);
+        WDialog.showDialog(
+          context,
+          icon: const Icon(Icons.warning_amber_rounded),
+          title: 'Terjadi kesalahan',
+          message: failure.message,
+          actions: [
+            DialogAction(
+              label: 'Coba lagi',
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
         _pageController.animateToPage(
           0,
           duration: const Duration(milliseconds: 500),
@@ -97,6 +109,7 @@ class RegisterProvider extends ChangeNotifier {
         WDialog.closeLoading();
         // get data
         context.read<UserProvider>().getProfile();
+        context.read<ActivityProvider>().getActivity();
         Navigator.pushNamedAndRemoveUntil(
           context,
           To.MAIN,
@@ -166,7 +179,11 @@ class RegisterProvider extends ChangeNotifier {
     if (_formKey.currentState!.validate()) {
       nextPage();
     } else {
-      WDialog.snackbar(context, message: 'Perhatikan kesalahan pada Form');
+      WDialog.snackbar(
+        context,
+        type: SnackBarType.ERROR,
+        message: 'Perhatikan kesalahan pada Form',
+      );
     }
   }
 

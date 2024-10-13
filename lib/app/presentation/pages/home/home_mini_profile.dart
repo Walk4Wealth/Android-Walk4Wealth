@@ -3,7 +3,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/user_provider.dart';
-import 'home_point_container.dart';
 
 class HomeMiniProfile extends StatelessWidget {
   const HomeMiniProfile({super.key});
@@ -12,77 +11,62 @@ class HomeMiniProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(
+      margin: const EdgeInsets.only(
         top: kToolbarHeight,
         left: 16,
         right: 16,
-        bottom: 16,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // mini profil
-          Consumer<UserProvider>(builder: (_, c, child) {
-            return Row(
-              children: [
-                //* foto profil
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                    ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: CircleAvatar(
-                    radius: 30,
-                    backgroundImage: c.getImgProfile(),
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  ),
-                ),
-                const SizedBox(width: 12),
-
-                //* nama
-                Flexible(
-                  fit: FlexFit.tight,
-                  child: Text.rich(
-                    TextSpan(
-                      text: 'Selamat datang, ',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                          ),
-                      children: [
-                        TextSpan(
-                          text: '\n${c.user?.nama ?? c.user?.username}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-
-                //* icon
-                Icon(
-                  Iconsax.notification,
+      child: Consumer<UserProvider>(builder: (_, c, child) {
+        return Row(
+          children: [
+            //* foto profil
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(
                   color: Theme.of(context).scaffoldBackgroundColor,
                 ),
-              ],
-            );
-          }),
-          const SizedBox(height: 16),
+                shape: BoxShape.circle,
+              ),
+              child: CircleAvatar(
+                radius: 30,
+                backgroundImage: c.getImgProfile(),
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              ),
+            ),
+            const SizedBox(width: 12),
 
-          //* conainer poin
-          const HomePointContainer(),
-        ],
-      ),
+            //* nama
+            Flexible(
+              fit: FlexFit.tight,
+              child: Text.rich(
+                TextSpan(
+                  text: 'Selamat datang, ',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                      ),
+                  children: [
+                    TextSpan(
+                      text: '\n${c.user?.nama ?? c.user?.username}',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+
+            //* icon
+            Icon(
+              Iconsax.notification,
+              color: Theme.of(context).scaffoldBackgroundColor,
+            ),
+          ],
+        );
+      }),
     );
   }
 }

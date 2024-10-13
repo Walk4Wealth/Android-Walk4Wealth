@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/utils/components/w_button.dart';
+import '../../../core/utils/strings/asset_img_string.dart';
 import '../../../domain/entity/product.dart';
 
 class TransactionDetailPage extends StatelessWidget {
@@ -30,6 +31,7 @@ class TransactionDetailPage extends StatelessWidget {
             color: Colors.black,
             child: CachedNetworkImage(
               imageUrl: product?.productImg ?? '',
+              errorWidget: (_, __, ___) => Image.asset(AssetImg.error),
               fit: BoxFit.cover,
             ),
           ),
@@ -92,6 +94,8 @@ class TransactionDetailPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       child: CachedNetworkImage(
                         imageUrl: product?.productImg ?? '',
+                        errorWidget: (_, __, ___) =>
+                            Image.asset(AssetImg.error),
                         fit: BoxFit.cover,
                       ),
                     ),

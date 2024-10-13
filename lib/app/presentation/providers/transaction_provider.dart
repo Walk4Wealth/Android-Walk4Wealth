@@ -3,13 +3,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/enum/request_state.dart';
+import '../../core/enums/request_state.dart';
 import '../../core/routes/navigate.dart';
-import '../../core/utils/components/w_button.dart';
 import '../../domain/entity/history.dart';
 import '../../domain/usecases/point/get_history_transaction.dart';
 import '../../domain/usecases/point/reedem_point.dart';
-import '../widgets/confirm_reedem_bottom_sheet.dart';
+import '../pages/transaction/modal_confirm_redem_point.dart';
 import 'shop_provider.dart';
 import 'user_provider.dart';
 
@@ -44,39 +43,19 @@ class TransactionProvider extends ChangeNotifier {
 
     await showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       sheetAnimationStyle: AnimationStyle(
         duration: const Duration(milliseconds: 500),
         reverseDuration: const Duration(milliseconds: 400),
       ),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(8),
-        ),
-      ),
       builder: (context) {
-        return ConfirmReedemBottomSheet(action: [
-          WButton(
-            label: 'Batal',
-            padding: 12,
-            type: ButtonType.OUTLINED,
-            onPressed: () => Navigator.pop(context),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            fit: FlexFit.tight,
-            child: WButton(
-              expand: true,
-              padding: 12,
-              label: 'Tukar',
-              onPressed: () {
-                final userId = context.read<UserProvider>().user?.id;
-                final productId = context.read<ShopProvider>().product?.id;
-                _reedem(context, userId ?? 0, productId ?? 0);
-              },
-            ),
-          ),
-        ]);
+        return ModalConfirmRedemPoint(
+          cancleReedem: () => Navigator.pop(context),
+          reedem: () {
+            final userId = context.read<UserProvider>().user?.id;
+            final productId = context.read<ShopProvider>().product?.id;
+            _reedem(context, userId ?? 0, productId ?? 0);
+          },
+        );
       },
     );
   }
@@ -100,7 +79,7 @@ class TransactionProvider extends ChangeNotifier {
     // state
     reedemPoint.fold(
       (failure) {
-        log('gagal melakukan reedem point [${failure.message}]');
+        log('gagal melakukan reedem point [${failure.message}], code [${failure.code}]');
         _reedemPoinState = RequestState.FAILURE;
         _errorMessage = failure.message;
         notifyListeners();
@@ -118,7 +97,7 @@ class TransactionProvider extends ChangeNotifier {
         Navigator.pop(context);
         Navigator.pushNamedAndRemoveUntil(
           context,
-          To.REEDEM_STATUS,
+          To.TRANSACTION_STATUS,
           (route) => route.isFirst,
         );
       },

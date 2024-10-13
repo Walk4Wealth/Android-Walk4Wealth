@@ -55,6 +55,9 @@ class UserRepositoryImpl implements UserRepository {
       final remoteUser = await _remoteDatasource.getUser();
       await _localDatasource.saveUser(remoteUser);
 
+      // logger
+      log('User berhasil diget dari remote saat update user');
+
       // return local user
       final localUser = _localDatasource.getUser();
       return right(localUser);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../activity_provider.dart';
 import '../user_provider.dart';
 import '../../../core/routes/navigate.dart';
 import '../../../domain/usecases/auth/check_authentication.dart';
@@ -21,6 +22,7 @@ class LoadProvider extends ChangeNotifier {
         if (isAuthenticated) {
           // get data
           context.read<UserProvider>().getProfile();
+          context.read<ActivityProvider>().getActivity();
           Navigator.pushNamedAndRemoveUntil(
             context,
             To.MAIN,

@@ -17,7 +17,6 @@ class WTextField extends StatelessWidget {
     this.contentPadding,
     this.textInputAction,
     this.onFieldSubmitted,
-    this.isError = false,
     this.readOnly = false,
     this.obscureText = false,
     this.floatingLabelBehavior = FloatingLabelBehavior.always,
@@ -28,7 +27,6 @@ class WTextField extends StatelessWidget {
   final String? label;
   final Widget? suffix;
   final bool obscureText;
-  final bool isError;
   final bool? isDense;
   final bool readOnly;
   final bool? enabled;
@@ -67,7 +65,6 @@ class WTextField extends StatelessWidget {
         isDense: isDense,
         contentPadding: contentPadding,
         labelText: label,
-        errorMaxLines: 2,
         suffixIcon: suffix,
         focusedErrorBorder: const OutlineInputBorder(
           borderSide: BorderSide(
@@ -75,11 +72,6 @@ class WTextField extends StatelessWidget {
             color: Colors.red,
           ),
         ),
-        errorStyle: const TextStyle(
-          fontSize: 11,
-          color: Colors.red,
-        ),
-        error: isError ? const SizedBox.shrink() : null,
         border: const OutlineInputBorder(),
         floatingLabelBehavior: floatingLabelBehavior,
       ),

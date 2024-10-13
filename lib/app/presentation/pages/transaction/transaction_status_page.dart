@@ -7,8 +7,8 @@ import '../../../core/utils/components/w_app_bar.dart';
 import '../../../core/utils/components/w_button.dart';
 import '../../providers/shop_provider.dart';
 
-class ReedemStatusPage extends StatelessWidget {
-  const ReedemStatusPage({super.key});
+class TransactionStatusPage extends StatelessWidget {
+  const TransactionStatusPage({super.key});
 
   @override
   Widget build(BuildContext context) {

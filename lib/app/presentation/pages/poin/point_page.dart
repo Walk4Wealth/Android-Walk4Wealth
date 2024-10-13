@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../transaction/history_view.dart';
+import '../transaction/transaction_history_list_view.dart';
 import 'poin_shop_view.dart';
 import '../../providers/user_provider.dart';
 import '../../../core/utils/components/w_app_bar.dart';
@@ -27,7 +27,7 @@ class PointPage extends StatelessWidget {
           physics: NeverScrollableScrollPhysics(),
           children: [
             PoinShopView(),
-            HistoryView(),
+            TransactionHistoryListView(),
           ],
         ),
       ),

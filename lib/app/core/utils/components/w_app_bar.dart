@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -27,7 +25,7 @@ class WAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: (title != null) ? Text(title!) : titleWidget,
       elevation: 0,
       centerTitle: centerTitle,
-      bottom: bottom ?? const AppBarLine(),
+      bottom: bottom ?? const _AppBarLine(),
       actions: actions,
       leading: leading,
       backgroundColor: Colors.white,
@@ -38,13 +36,11 @@ class WAppBar extends StatelessWidget implements PreferredSizeWidget {
         color: Theme.of(context).primaryColor,
       ),
       iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
-      systemOverlayStyle: (Platform.isIOS)
-          ? SystemUiOverlayStyle.dark
-          : const SystemUiOverlayStyle(
-              statusBarColor: Colors.transparent,
-              statusBarBrightness: Brightness.dark,
-              statusBarIconBrightness: Brightness.dark,
-            ),
+      systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.dark,
+      ),
     );
   }
 
@@ -55,8 +51,9 @@ class WAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class AppBarLine extends StatelessWidget implements PreferredSizeWidget {
-  const AppBarLine({super.key, this.height = 1});
+class _AppBarLine extends StatelessWidget implements PreferredSizeWidget {
+  // ignore: unused_element
+  const _AppBarLine({super.key, this.height = 1});
 
   final double height;
 

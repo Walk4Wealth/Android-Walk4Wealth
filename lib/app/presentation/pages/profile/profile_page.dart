@@ -89,14 +89,8 @@ class ProfilePage extends StatelessWidget {
               title: 'Profil Saya',
               onTap: () => Navigator.pushNamed(
                 context,
-                To.DETAIL_PROFIL,
+                To.PROFIL_DETAIL,
               ),
-            ),
-            _menuTile(
-              context,
-              icon: Iconsax.notification,
-              title: 'Notifikasi',
-              onTap: () {},
             ),
             _menuTile(
               context,
