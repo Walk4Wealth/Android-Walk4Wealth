@@ -50,7 +50,7 @@ android {
         prod {
             dimension "walk_for_wealth"
             // applicationIdSuffix ".prod"
-            resValue "string", "app_name", "W4W"
+            resValue "string", "app_name", "Walk4Wealth"
             versionNameSuffix ".prod"
         }
     }

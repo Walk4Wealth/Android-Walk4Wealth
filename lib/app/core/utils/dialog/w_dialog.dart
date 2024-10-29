@@ -15,43 +15,35 @@ class WDialog {
 
   static void snackbar(
     BuildContext context, {
+    required String title,
     required String message,
+    required SnackBarType type,
     int seconds = 4,
-    SnackBarType type = SnackBarType.NORMAL,
   }) {
-    Color? getColor() {
+    Color getFgColor() {
       switch (type) {
+        case SnackBarType.NORMAL:
+          return Colors.blue;
+        case SnackBarType.WARNING:
+          return Colors.orange;
         case SnackBarType.ERROR:
           return Colors.red;
-        case SnackBarType.WARNING:
-          return Colors.amber;
-        default:
-          return Colors.blue;
-      }
-    }
-
-    Icon? getIcon() {
-      const color = Colors.grey;
-      switch (type) {
-        case SnackBarType.ERROR:
-          return const Icon(Icons.error_outline, color: color);
-        case SnackBarType.WARNING:
-          return const Icon(Icons.warning_amber_rounded, color: color);
-        default:
-          return null;
       }
     }
 
     Flushbar(
-      messageSize: 12,
       message: message,
-      shouldIconPulse: false,
-      leftBarIndicatorColor: getColor(),
+      title: title,
+      titleSize: 14,
+      messageSize: 12,
+      backgroundColor: Colors.white,
+      messageColor: getFgColor(),
+      titleColor: getFgColor(),
+      borderColor: getFgColor(),
       duration: Duration(seconds: seconds),
       borderRadius: BorderRadius.circular(4),
       flushbarPosition: FlushbarPosition.TOP,
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      icon: getIcon(),
+      margin: const EdgeInsets.all(12),
     ).show(context);
   }
 
@@ -74,7 +66,7 @@ class WDialog {
       ),
       flushbarStyle: FlushbarStyle.GROUNDED,
       flushbarPosition: FlushbarPosition.TOP,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 2),
       animationDuration: const Duration(milliseconds: 500),
       backgroundColor: bgColor,
     ).show(context);
@@ -142,9 +134,10 @@ class WDialog {
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       transitionBuilder: (_, a1, __, child) =>
           ScaleTransition(scale: a1, child: child),
-      pageBuilder: (c, a1, a2) => PopScope(
+      pageBuilder: (context, a1, a2) => PopScope(
         canPop: canPop,
         child: MaterialModalDialog(
+          context,
           title: title,
           icon: icon,
           message: message,

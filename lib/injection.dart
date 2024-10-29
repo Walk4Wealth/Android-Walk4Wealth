@@ -236,7 +236,6 @@ void _activityDependencies() {
     () => TrackingProvider(
       distance: locator<Distance>(),
       location: locator<Location>(),
-      db: locator<Db>(),
       connection: locator<DeviceConnection>(),
     ),
   );
@@ -244,7 +243,6 @@ void _activityDependencies() {
     () => ActivityProvider(
       createActivity: locator<CreateActivity>(),
       getActivity: locator<GetActivity>(),
-      updateUser: locator<UpdateUser>(),
     ),
   );
 

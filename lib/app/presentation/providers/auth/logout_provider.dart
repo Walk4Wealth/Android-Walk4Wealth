@@ -46,19 +46,21 @@ class LogoutProvider extends ChangeNotifier {
               ],
             );
           },
-          (_) {
+          (_) async {
             // semua data penyimpanan lokal seperti cache dan shared prefs akan dihapus
             // token, user, dan cache manager
-            _deleteUser.call();
+            await _deleteUser.call();
             _cacheManager.clear();
 
             // action logout
             WDialog.closeLoading();
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              To.ON_BOARDING,
-              (route) => false,
-            );
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                To.ON_BOARDING,
+                (route) => false,
+              );
+            }
           },
         );
       }

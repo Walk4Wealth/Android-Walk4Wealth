@@ -24,14 +24,17 @@ class ActivitySavePage extends StatelessWidget {
               final mileageInKm = c.mileage / 1000;
               return Column(
                 children: [
-                  //* capture map
+                  //* capture maps
                   SizedBox(
                     width: double.infinity,
                     height: 180,
-                    child: CaptureMap(points: c.coordinates),
+                    child: CaptureMap(
+                      points: c.coordinates,
+                      scrollGestureEnabled: false,
+                    ),
                   ),
 
-                  //* data aktivitas
+                  //* container data activity
                   SizedBox(
                     width: double.infinity,
                     child: Padding(
@@ -57,10 +60,11 @@ class ActivitySavePage extends StatelessWidget {
                                 //* waktu
                                 _buildData(
                                   context,
+                                  icon: Icons.watch_later_outlined,
                                   title: 'Waktu',
                                   data: Text(
                                     DateFormat('EEEE, dd MMMM yyyy', 'id')
-                                        .format(c.currentDate),
+                                        .format(c.currentDate.toLocal()),
                                     style:
                                         Theme.of(context).textTheme.bodyMedium,
                                   ),
@@ -70,6 +74,7 @@ class ActivitySavePage extends StatelessWidget {
                                 //* durasi
                                 _buildData(
                                   context,
+                                  icon: Icons.timelapse_outlined,
                                   title: 'Durasi',
                                   data: Text(
                                     c.stringDuration,
@@ -82,6 +87,7 @@ class ActivitySavePage extends StatelessWidget {
                                 //* langkah
                                 _buildData(
                                   context,
+                                  icon: Icons.directions_walk,
                                   title: 'Langkah',
                                   data: Text(
                                     '${NumberFormat('#,###').format(c.step)} langkah',
@@ -94,6 +100,7 @@ class ActivitySavePage extends StatelessWidget {
                                 //* jarak tempuh
                                 _buildData(
                                   context,
+                                  icon: Icons.route_outlined,
                                   title: 'Jarak tempuh',
                                   data: Column(
                                     mainAxisSize: MainAxisSize.min,
@@ -109,9 +116,7 @@ class ActivitySavePage extends StatelessWidget {
                                         '${NumberFormat('#,###').format(c.mileage)} m',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                                color: Colors.grey.shade600),
+                                            .bodyMedium,
                                       ),
                                     ],
                                   ),
@@ -130,38 +135,72 @@ class ActivitySavePage extends StatelessWidget {
             },
           ),
         ),
-        bottomSheet: Container(
-          padding: const EdgeInsets.all(16),
-          color: Colors.white,
-          child: WButton(
-            padding: 12,
-            label: 'Simpan',
-            onPressed: () async {
-              final trackingC = context.read<TrackingProvider>();
+        bottomSheet: _actionButton(context),
+      ),
+    );
+  }
 
-              await context.read<ActivityProvider>().createActivity(
-                    context,
-                    activityId: trackingC.getActivityId(),
-                    duration: trackingC.duration.inSeconds,
-                    mileage: trackingC.mileage.toInt(),
-                    steps: trackingC.step,
-                    coordinates: trackingC.coordinates,
-                  );
+  Widget _actionButton(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      color: Colors.white,
+      child: Row(
+        children: [
+          //* remove activity
+          WButton(
+            padding: 12,
+            label: 'Hapus',
+            backgroundColor: Colors.red,
+            onPressed: () async {
+              final isBack = await _showBackDialog(context) ?? false;
+
+              if (isBack && context.mounted) {
+                Navigator.of(context).pop();
+              }
             },
           ),
-        ),
+          const SizedBox(width: 16),
+
+          //* save activity
+          Flexible(
+            fit: FlexFit.tight,
+            child: WButton(
+              padding: 12,
+              label: 'Simpan',
+              onPressed: () async {
+                final trackingC = context.read<TrackingProvider>();
+
+                await context.read<ActivityProvider>().createActivity(
+                      context,
+                      activityId: trackingC.getActivityId(),
+                      duration: trackingC.duration.inSeconds,
+                      mileage: trackingC.mileage.toInt(),
+                      steps: trackingC.step,
+                      coordinates: trackingC.coordinates,
+                    );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildData(
     BuildContext context, {
+    required IconData icon,
     required String title,
     required Widget data,
   }) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Icon(
+          icon,
+          color: Colors.grey,
+          size: 20,
+        ),
+        const SizedBox(width: 8),
         Text(
           title,
           style: Theme.of(context)
@@ -169,10 +208,37 @@ class ActivitySavePage extends StatelessWidget {
               .bodyMedium
               ?.copyWith(color: Colors.grey),
         ),
-        data,
+        Flexible(
+          fit: FlexFit.tight,
+          child: Align(alignment: Alignment.centerRight, child: data),
+        ),
       ],
     );
   }
+}
+
+Future<bool?> _showBackDialog(BuildContext context) async {
+  return WDialog.showDialog<bool>(
+    context,
+    icon: const Icon(Iconsax.trash),
+    title: 'Hapus Aktivitas',
+    message:
+        'Apakah kamu yakin ingin meninggalkan halaman ini dan menghapus aktivitas yang telah dikalukan?',
+    actions: [
+      DialogAction(
+        label: 'Batal',
+        onPressed: () => Navigator.of(context).pop(false),
+      ),
+      DialogAction(
+        label: 'Hapus',
+        isDefaultAction: true,
+        onPressed: () {
+          context.read<TrackingProvider>().resetTrackingData();
+          Navigator.of(context).pop(true);
+        },
+      )
+    ],
+  );
 }
 
 //* pop scope wrapper
@@ -180,30 +246,6 @@ class _PopScopeWrapper extends StatelessWidget {
   const _PopScopeWrapper({required this.child});
 
   final Widget child;
-
-  Future<bool?> _showBackDialog(BuildContext context) async {
-    return WDialog.showDialog<bool>(
-      context,
-      icon: const Icon(Iconsax.trash),
-      title: 'Hapus Aktivitas',
-      message:
-          'Apakah kamu yakin ingin meninggalkan halaman ini dan menghapus aktivitas yang telah dikalukan?',
-      actions: [
-        DialogAction(
-          label: 'Batal',
-          onPressed: () => Navigator.pop(context, false),
-        ),
-        DialogAction(
-          label: 'Hapus',
-          isDefaultAction: true,
-          onPressed: () {
-            context.read<TrackingProvider>().resetTrackingData();
-            Navigator.pop(context, true);
-          },
-        )
-      ],
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +256,7 @@ class _PopScopeWrapper extends StatelessWidget {
 
         final shouldPop = await _showBackDialog(context) ?? false;
         if (context.mounted && shouldPop) {
-          Navigator.pop(context);
+          Navigator.of(context).pop();
         }
       },
       child: child,

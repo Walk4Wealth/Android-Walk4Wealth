@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../core/enums/request_state.dart';
-import '../../../core/routes/navigate.dart';
 import '../../../core/utils/components/to_top_button.dart';
 import '../../providers/shop_provider.dart';
 import '../../widgets/product_card.dart';
@@ -64,14 +63,14 @@ class _PoinShopViewState extends State<PoinShopView> {
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async => _loadData(),
-        child: Consumer<ShopProvider>(builder: (_, c, child) {
+        child: Consumer<ShopProvider>(builder: (ctx, c, _) {
           return ListView(
             controller: _scrollController,
             padding: const EdgeInsets.symmetric(vertical: 16),
             children: const [
-              VendorViewState(),
+              _VendorViewState(),
               SizedBox(height: 16),
-              ProductViewState(),
+              _ProductViewState(),
             ],
           );
         }),
@@ -82,8 +81,8 @@ class _PoinShopViewState extends State<PoinShopView> {
 }
 
 //* list vendor
-class VendorViewState extends StatelessWidget {
-  const VendorViewState({super.key});
+class _VendorViewState extends StatelessWidget {
+  const _VendorViewState();
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +90,7 @@ class VendorViewState extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // title
+        //* title
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
@@ -104,7 +103,7 @@ class VendorViewState extends StatelessWidget {
         ),
         const SizedBox(height: 8),
 
-        // content
+        //* content
         Consumer<ShopProvider>(
           builder: (_, c, child) {
             if (c.getAllVendorState == RequestState.LOADING) {
@@ -130,9 +129,7 @@ class VendorViewState extends StatelessWidget {
           final isLast = (vendor == c.vendors.last);
           return Padding(
             padding: isLast ? EdgeInsets.zero : const EdgeInsets.only(right: 8),
-            child: VendorCard(vendor, onTap: () {
-              Navigator.pushNamed(context, To.VENDOR, arguments: vendor.id);
-            }),
+            child: VendorCard(vendor),
           );
         }),
       ),
@@ -192,8 +189,8 @@ class VendorViewState extends StatelessWidget {
 }
 
 //* list product
-class ProductViewState extends StatelessWidget {
-  const ProductViewState({super.key});
+class _ProductViewState extends StatelessWidget {
+  const _ProductViewState();
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +198,7 @@ class ProductViewState extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // title
+        //* title
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
@@ -214,7 +211,7 @@ class ProductViewState extends StatelessWidget {
         ),
         const SizedBox(height: 8),
 
-        // content
+        //* content
         Consumer<ShopProvider>(
           builder: (_, c, child) {
             if (c.getAllProductState == RequestState.LOADING) {
@@ -244,16 +241,7 @@ class ProductViewState extends StatelessWidget {
       itemCount: c.products.length,
       itemBuilder: (context, index) {
         final product = c.products[index];
-        return ProductCard(product, onTap: () {
-          Navigator.pushNamed(
-            context,
-            To.PRODUCT,
-            arguments: {
-              'product_id': product.id,
-              'vendor_id': product.vendorId,
-            },
-          );
-        });
+        return ProductCard(product);
       },
     );
   }

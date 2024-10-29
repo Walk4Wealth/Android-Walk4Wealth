@@ -12,64 +12,45 @@ class ProfileDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: WAppBar(
-        title: context.watch<UserProvider>().user?.nama ??
-            context.watch<UserProvider>().user?.username ??
-            'Akun ini tidak memiliki Nama',
+        //* username
+        titleWidget: Consumer<UserProvider>(
+          builder: (ctx, c, _) {
+            return Text(
+              c.user?.nama ??
+                  c.user?.username ??
+                  'Akun ini tidak memiliki Nama',
+            );
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: SizedBox(
           width: double.infinity,
           child: Consumer<UserProvider>(
-            builder: (_, c, child) {
+            builder: (ctx, c, _) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // foto
-                  SizedBox(
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor:
-                                Theme.of(context).scaffoldBackgroundColor,
-                            backgroundImage: c.getImgProfile(),
-                          ),
-                        ),
-                        //
-                        Text(
-                          c.user?.username ??
-                              'Akun ini tidak memiliki username',
-                        ),
-                        Text(
-                          c.user?.email ?? 'Akun ini tidak memiliki email',
-                        ),
-                      ],
-                    ),
-                  ),
+                  //* foto
+                  _headerDetailProfile(context, c),
                   const SizedBox(height: 16),
 
-                  // level
+                  //* level
                   _profileMenu(
                     context,
                     title: 'Level',
                     value: c.user?.level ?? 'Akun ini tidak memiliki Level',
                   ),
 
-                  // role
+                  //* role
                   _profileMenu(
                     context,
                     title: 'Role',
                     value: c.user?.role ?? 'Akun ini tidak memiliki Role',
                   ),
 
-                  // usia
+                  //* usia
                   _profileMenu(
                     context,
                     title: 'Usia',
@@ -78,7 +59,7 @@ class ProfileDetailPage extends StatelessWidget {
 
                   Row(
                     children: [
-                      // tinggi
+                      //* tinggi
                       Flexible(
                         child: _profileMenu(
                           context,
@@ -87,7 +68,8 @@ class ProfileDetailPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      // berat
+
+                      //* berat
                       Flexible(
                         child: _profileMenu(
                           context,
@@ -98,7 +80,7 @@ class ProfileDetailPage extends StatelessWidget {
                     ],
                   ),
 
-                  // no telp
+                  //* no telp
                   _profileMenu(
                     context,
                     title: 'Kontak',
@@ -109,6 +91,34 @@ class ProfileDetailPage extends StatelessWidget {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _headerDetailProfile(BuildContext context, UserProvider c) {
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.grey),
+            ),
+            child: CircleAvatar(
+              radius: 50,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              backgroundImage: c.getImgProfile(),
+            ),
+          ),
+          //
+          Text(
+            c.user?.username ?? 'Akun ini tidak memiliki username',
+          ),
+          Text(
+            c.user?.email ?? 'Akun ini tidak memiliki email',
+          ),
+        ],
       ),
     );
   }

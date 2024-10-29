@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -65,8 +63,6 @@ class ActivityRemoteDatasourceImpl implements ActivityRemoteDatasource {
             'coordinates': coordinatesData,
           },
         );
-
-        log('berhasil membuat aktivitas, latlong yang dikirimkan $coordinatesData');
 
         // parsing data
         final activity = ActivityModel.fromRemote(response.data['data']);

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +6,7 @@ import '../../core/routes/navigate.dart';
 import '../../domain/entity/history.dart';
 import '../../domain/usecases/point/get_history_transaction.dart';
 import '../../domain/usecases/point/reedem_point.dart';
-import '../pages/transaction/modal_confirm_redem_point.dart';
+import '../pages/transaction/modal_confirmation_redem_point.dart';
 import 'shop_provider.dart';
 import 'user_provider.dart';
 
@@ -79,7 +77,6 @@ class TransactionProvider extends ChangeNotifier {
     // state
     reedemPoint.fold(
       (failure) {
-        log('gagal melakukan reedem point [${failure.message}], code [${failure.code}]');
         _reedemPoinState = RequestState.FAILURE;
         _errorMessage = failure.message;
         notifyListeners();
@@ -92,8 +89,7 @@ class TransactionProvider extends ChangeNotifier {
         // untuk mendapat poin user yang sekarang
         context.read<UserProvider>().updateProfile();
 
-        // pesan
-        log('sukses melakukan reedem point');
+        // action
         Navigator.pop(context);
         Navigator.pushNamedAndRemoveUntil(
           context,
@@ -116,13 +112,11 @@ class TransactionProvider extends ChangeNotifier {
     // state
     allHistory.fold(
       (failure) {
-        log('data riwayat transaksi gagal di get [${failure.message}]');
         _getHistoryTransactionState = RequestState.FAILURE;
         _errorMessage = failure.message;
         notifyListeners();
       },
       (histories) {
-        log('data riwayat transaksi berhasil di get');
         _getHistoryTransactionState = RequestState.SUCCESS;
         _histories = histories;
         notifyListeners();

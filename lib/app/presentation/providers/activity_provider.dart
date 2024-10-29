@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
@@ -10,21 +8,18 @@ import '../../core/utils/dialog/w_dialog.dart';
 import '../../domain/entity/activity.dart';
 import '../../domain/usecases/activity/create_activity.dart';
 import '../../domain/usecases/activity/get_activity.dart';
-import '../../domain/usecases/user/update_user.dart';
 import 'tracking_provider.dart';
+import 'user_provider.dart';
 
 class ActivityProvider extends ChangeNotifier {
   final CreateActivity _createActivity;
   final GetActivity _getActivity;
-  final UpdateUser _updateUser;
 
   ActivityProvider({
     required CreateActivity createActivity,
     required GetActivity getActivity,
-    required UpdateUser updateUser,
   })  : _createActivity = createActivity,
-        _getActivity = getActivity,
-        _updateUser = updateUser;
+        _getActivity = getActivity;
 
   RequestState _getActivityState = RequestState.LOADING;
   RequestState get getActivityState => _getActivityState;
@@ -40,8 +35,6 @@ class ActivityProvider extends ChangeNotifier {
 
   //* get activity
   Future<void> getActivity() async {
-    log('mulai mendapatkan aktivitas');
-
     // loading
     _getActivityState = RequestState.LOADING;
     notifyListeners();
@@ -50,18 +43,19 @@ class ActivityProvider extends ChangeNotifier {
     final activities = await _getActivity.call();
 
     // state
-    activities.fold((failure) {
-      _erroMessage = failure.message;
-      _getActivityState = RequestState.FAILURE;
-      notifyListeners();
-
-      log('gagal mendapatkan aktivitas ${failure.message}');
-    }, (activites) {
-      _activities = activites;
-      _erroMessage = null;
-      _getActivityState = RequestState.SUCCESS;
-      notifyListeners();
-    });
+    activities.fold(
+      (failure) {
+        _erroMessage = failure.message;
+        _getActivityState = RequestState.FAILURE;
+        notifyListeners();
+      },
+      (activites) {
+        _activities = activites;
+        _erroMessage = null;
+        _getActivityState = RequestState.SUCCESS;
+        notifyListeners();
+      },
+    );
   }
 
   //* create activity
@@ -100,7 +94,7 @@ class ActivityProvider extends ChangeNotifier {
           )
         ],
       );
-    }, (activity) async {
+    }, (activity) {
       //set activity
       _activity = activity;
       notifyListeners();
@@ -108,15 +102,13 @@ class ActivityProvider extends ChangeNotifier {
       // ketika berhasil menyimpan aktivitas
       // maka reset data aktivitas dan update user untuk mendapatkan jumlah koin terbaru
       context.read<TrackingProvider>().resetTrackingData();
-      await _updateUser.call();
+      context.read<UserProvider>().updateProfile();
       WDialog.closeLoading();
-      if (context.mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          To.ACTIVITY_SAVE_CONFIRM,
-          (route) => route.isFirst,
-        );
-      }
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        To.ACTIVITY_SAVE_CONFIRM,
+        (route) => route.isFirst,
+      );
     });
   }
 }

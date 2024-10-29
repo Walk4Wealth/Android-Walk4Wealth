@@ -81,6 +81,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
         controller: _scrollController,
         itemCount: c.activities.length,
         padding: const EdgeInsets.all(16),
+        physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
           final activity = c.activities[index];
           final isFirst = (index == 0);
@@ -124,28 +125,34 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
   }
 
   Widget _loadingState() {
+    Color baseColor = Colors.grey.shade300;
+    Color highlightColor = Colors.grey.shade100;
+
     return ListView.separated(
-      itemCount: 6,
+      itemCount: 5,
       shrinkWrap: true,
       padding: const EdgeInsets.all(16),
-      separatorBuilder: (c, i) => const SizedBox(height: 16),
+      separatorBuilder: (c, i) => const SizedBox(height: 38),
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         return Row(
           children: [
+            //* ilustration
             Shimmer.fromColors(
-              baseColor: Colors.grey.shade300,
-              highlightColor: Colors.grey.shade100,
+              baseColor: baseColor,
+              highlightColor: highlightColor,
               child: Container(
-                width: 50,
-                height: 50,
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.grey.shade300,
+                  color: baseColor,
                 ),
               ),
             ),
             const SizedBox(width: 16),
+
+            //* activity data
             Flexible(
               fit: FlexFit.tight,
               child: LayoutBuilder(builder: (_, size) {
@@ -154,39 +161,39 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Shimmer.fromColors(
-                      baseColor: Colors.grey.shade300,
-                      highlightColor: Colors.grey.shade100,
+                      baseColor: baseColor,
+                      highlightColor: highlightColor,
                       child: Container(
-                        width: size.maxWidth * 0.8,
+                        width: size.maxWidth * 0.3,
                         height: 10,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
+                          color: baseColor,
                           borderRadius: BorderRadius.circular(100),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     Shimmer.fromColors(
-                      baseColor: Colors.grey.shade300,
-                      highlightColor: Colors.grey.shade100,
+                      baseColor: baseColor,
+                      highlightColor: highlightColor,
                       child: Container(
-                        width: size.maxWidth * 0.8,
-                        height: 10,
+                        width: size.maxWidth * 0.4,
+                        height: 15,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
+                          color: baseColor,
                           borderRadius: BorderRadius.circular(100),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     Shimmer.fromColors(
-                      baseColor: Colors.grey.shade300,
-                      highlightColor: Colors.grey.shade100,
+                      baseColor: baseColor,
+                      highlightColor: highlightColor,
                       child: Container(
                         width: size.maxWidth * 0.6,
                         height: 10,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
+                          color: baseColor,
                           borderRadius: BorderRadius.circular(100),
                         ),
                       ),
@@ -194,6 +201,16 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                   ],
                 );
               }),
+            ),
+
+            //* icon forward
+            Shimmer.fromColors(
+              baseColor: baseColor,
+              highlightColor: highlightColor,
+              child: Icon(
+                Icons.arrow_forward_ios,
+                color: baseColor,
+              ),
             ),
           ],
         );

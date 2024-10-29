@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
@@ -42,7 +40,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   //* get profile
-  void getProfile() async {
+  Future<void> getProfile() async {
     // loading
     _setState(RequestState.LOADING);
 
@@ -73,7 +71,7 @@ class UserProvider extends ChangeNotifier {
     final newProfile = await _updateUser.call();
 
     newProfile.fold(
-      (failure) => log('Gagal udate user [${failure.message}]'),
+      (failure) {},
       (newUser) {
         _user = newUser;
         notifyListeners();
@@ -82,25 +80,12 @@ class UserProvider extends ChangeNotifier {
   }
 
   void updateImgProfile(BuildContext context) async {
-    if (Platform.isIOS) {
-      await showCupertinoModalPopup(
-        context: context,
-        builder: (context) {
-          return _cupertinoBottomSheet(context);
-        },
-      );
-    } else {
-      await showModalBottomSheet(
-        context: context,
-        showDragHandle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
-        ),
-        builder: (context) {
-          return _materialBottomSheet(context);
-        },
-      );
-    }
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return _materialBottomSheet(context);
+      },
+    );
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -114,68 +99,44 @@ class UserProvider extends ChangeNotifier {
   }
 
   Widget _materialBottomSheet(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 16),
-          child: Text(
-            'Update foto profil',
-            style: Theme.of(context).textTheme.titleLarge,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: Text(
+              'Update foto profil',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        ListTile(
-          title: Text(
-            'Ambil dari kamera',
-            style: Theme.of(context).textTheme.bodyMedium,
+          const SizedBox(height: 16),
+          ListTile(
+            title: Text(
+              'Ambil dari kamera',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            leading: const Icon(Iconsax.camera),
+            onTap: () async {
+              Navigator.pop(context);
+              await _pickImage(ImageSource.camera);
+            },
           ),
-          leading: const Icon(Iconsax.camera),
-          onTap: () async {
-            Navigator.pop(context);
-            await _pickImage(ImageSource.camera);
-          },
-        ),
-        ListTile(
-          title: Text(
-            'Ambil dari galeri',
-            style: Theme.of(context).textTheme.bodyMedium,
+          ListTile(
+            title: Text(
+              'Ambil dari galeri',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            leading: const Icon(Iconsax.gallery),
+            onTap: () async {
+              Navigator.pop(context);
+              await _pickImage(ImageSource.gallery);
+            },
           ),
-          leading: const Icon(Iconsax.gallery),
-          onTap: () async {
-            Navigator.pop(context);
-            await _pickImage(ImageSource.gallery);
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _cupertinoBottomSheet(BuildContext context) {
-    return CupertinoActionSheet(
-      title: const Text('Update foto profile'),
-      cancelButton: CupertinoActionSheetAction(
-        onPressed: () => Navigator.pop(context),
-        child: const Text('Batal'),
+        ],
       ),
-      actions: [
-        CupertinoActionSheetAction(
-          onPressed: () async {
-            Navigator.pop(context);
-            await _pickImage(ImageSource.camera);
-          },
-          child: const Text('Dari kamera'),
-        ),
-        CupertinoActionSheetAction(
-          onPressed: () async {
-            Navigator.pop(context);
-            await _pickImage(ImageSource.gallery);
-          },
-          isDefaultAction: true,
-          child: const Text('Dari galeri'),
-        ),
-      ],
     );
   }
 

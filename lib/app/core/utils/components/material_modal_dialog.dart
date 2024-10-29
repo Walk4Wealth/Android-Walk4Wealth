@@ -7,7 +7,8 @@ import '../dialog/w_dialog.dart';
 enum MaterialDialogActionType { OUTLINED, FILLED }
 
 class MaterialModalDialog extends StatelessWidget {
-  const MaterialModalDialog({
+  const MaterialModalDialog(
+    BuildContext context, {
     super.key,
     required this.message,
     this.title,

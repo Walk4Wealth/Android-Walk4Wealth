@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fpdart/fpdart.dart';
 
 import '../../core/error/failure.dart';
@@ -31,7 +29,6 @@ class UserRepositoryImpl implements UserRepository {
       // get user dari server
       try {
         final remoteUser = await _remoteDatasource.getUser();
-        log('user ${remoteUser.username} berhasil di get');
 
         // save user in db
         await _localDatasource.saveUser(remoteUser);
@@ -54,9 +51,6 @@ class UserRepositoryImpl implements UserRepository {
       // get user dari server kemudian save ke db
       final remoteUser = await _remoteDatasource.getUser();
       await _localDatasource.saveUser(remoteUser);
-
-      // logger
-      log('User berhasil diget dari remote saat update user');
 
       // return local user
       final localUser = _localDatasource.getUser();

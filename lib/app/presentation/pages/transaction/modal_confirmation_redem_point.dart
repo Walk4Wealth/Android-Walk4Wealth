@@ -227,7 +227,7 @@ class ModalConfirmRedemPoint extends StatelessWidget {
               label: 'Kembali',
               padding: 12,
               type: ButtonType.OUTLINED,
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.of(context).pop(),
             ),
             const SizedBox(width: 8),
             Flexible(
@@ -242,10 +242,10 @@ class ModalConfirmRedemPoint extends StatelessWidget {
                 ),
                 onPressed: () {
                   // tutup bottom nav bar
-                  Navigator.pop(context);
+                  Navigator.of(context).pop();
 
                   // back halaman
-                  Navigator.pop(context);
+                  Navigator.of(context).pop();
                 },
               ),
             ),

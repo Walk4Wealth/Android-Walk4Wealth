@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/routes/navigate.dart';
 import '../../../core/utils/components/w_app_bar.dart';
+import '../../../core/utils/strings/asset_img_string.dart';
 import '../../providers/auth/logout_provider.dart';
 import '../../providers/user_provider.dart';
 
@@ -19,70 +20,11 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // mini profile card
-            InkWell(
-              onTap: () {
-                context.read<UserProvider>().updateImgProfile(context);
-              },
-              borderRadius: BorderRadius.circular(8),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Consumer<UserProvider>(
-                  builder: (_, c, child) {
-                    return Row(
-                      children: [
-                        // foto profil
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey,
-                            ),
-                          ),
-                          child: CircleAvatar(
-                            radius: 32,
-                            backgroundColor:
-                                Theme.of(context).scaffoldBackgroundColor,
-                            backgroundImage: c.getImgProfile(),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
+            //* mini profile card
+            _headerProfile(context),
+            const SizedBox(height: 32),
 
-                        Flexible(
-                          fit: FlexFit.tight,
-                          flex: 10,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // nama
-                              Text(
-                                c.user?.nama ?? c.user?.username ?? '',
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              // level
-                              Text(
-                                (c.user?.level ?? 'null level'),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(color: Colors.black54),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Icon(Iconsax.edit_2),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // menu profile
+            //* menu profile
             _menuTile(
               context,
               icon: Iconsax.profile_tick,
@@ -91,24 +33,6 @@ class ProfilePage extends StatelessWidget {
                 context,
                 To.PROFIL_DETAIL,
               ),
-            ),
-            _menuTile(
-              context,
-              icon: Iconsax.heart_add,
-              title: 'Penawaran yang disukai',
-              onTap: () => Navigator.pushNamed(context, To.FAVORITE),
-            ),
-            _menuTile(
-              context,
-              icon: Iconsax.setting,
-              title: 'Pengaturan aplikasi',
-              onTap: () {},
-            ),
-            _menuTile(
-              context,
-              icon: Iconsax.shield_tick,
-              title: 'Kebijakan & Privasi',
-              onTap: () {},
             ),
             _menuTile(
               context,
@@ -122,6 +46,113 @@ class ProfilePage extends StatelessWidget {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _headerProfile(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        onTap: () => context.read<UserProvider>().updateImgProfile(context),
+        borderRadius: BorderRadius.circular(8),
+        child: Consumer<UserProvider>(
+          builder: (_, c, child) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      //* foto profil
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          radius: 32,
+                          backgroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                          backgroundImage: c.getImgProfile(),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      Flexible(
+                        fit: FlexFit.tight,
+                        flex: 10,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            //* nama
+                            Text(
+                              c.user?.nama ?? c.user?.username ?? '',
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+
+                            //* level
+                            Text(
+                              (c.user?.level ?? 'null level'),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Icon(Iconsax.edit_2),
+                    ],
+                  ),
+                ),
+
+                //* poin
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(8),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Poin saya',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${c.user?.totalPoints ?? 0}',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                      ),
+                      const SizedBox(width: 6),
+                      Image.asset(
+                        AssetImg.iconCoin,
+                        width: 18,
+                        height: 18,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

@@ -22,6 +22,7 @@ class OnBoardingView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          //* ilustrasi
           Padding(
             padding: const EdgeInsets.all(16),
             child: Image.asset(
@@ -30,6 +31,8 @@ class OnBoardingView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+
+          //* title
           Text(
             title,
             textAlign: TextAlign.center,
@@ -39,6 +42,8 @@ class OnBoardingView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
+
+          //* subtitle
           Text(
             subtitle,
             textAlign: TextAlign.center,

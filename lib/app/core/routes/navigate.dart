@@ -6,10 +6,9 @@ import '../../domain/entity/activity.dart';
 import '../../domain/entity/product.dart';
 import '../../presentation/pages/activity/activity_detail_page.dart';
 import '../../presentation/pages/activity/activity_page.dart';
-import '../../presentation/pages/activity/activity_save_confirm_page.dart';
+import '../../presentation/pages/activity/activity_save_confirmation_page.dart';
 import '../../presentation/pages/activity/activity_save_page.dart';
 import '../../presentation/pages/activity/all_activities_page.dart';
-import '../../presentation/pages/favorite_page.dart';
 import '../../presentation/pages/login_page.dart';
 import '../../presentation/pages/profile/profile_detail_page.dart';
 import '../../presentation/pages/register/register_page.dart';
@@ -17,9 +16,9 @@ import '../../presentation/pages/splash_page.dart';
 import '../../presentation/pages/main_page.dart';
 import '../../presentation/pages/on_boarding/on_boarding_page.dart';
 import '../../presentation/pages/product/product_page.dart';
-import '../../presentation/pages/transaction/transaction_status_page.dart';
+import '../../presentation/pages/transaction/transaction_success_page.dart';
 import '../../presentation/pages/transaction/transaction_detail_page.dart';
-import '../../presentation/pages/vendor_page.dart';
+import '../../presentation/pages/vendor/vendor_page.dart';
 
 class To {
   To._();
@@ -37,7 +36,6 @@ class To {
   static const PROFIL_DETAIL = '/profile-detail';
   static const PRODUCT = '/product';
   static const VENDOR = '/vendor';
-  static const FAVORITE = '/favorite';
   static const TRANSACTION_STATUS = '/transaction-status';
   static const TRANSACTION_DETAIL = '/transaction-detail';
 }
@@ -87,9 +85,7 @@ class Navigate {
         final vendorId = settings.arguments as int;
         return _createRoute(VendorPage(vendorId: vendorId));
       case To.TRANSACTION_STATUS:
-        return _createRoute(const TransactionStatusPage());
-      case To.FAVORITE:
-        return _createRoute(const FavoritePage());
+        return _createRoute(const TransactionSuccessPage());
       case To.TRANSACTION_DETAIL:
         final product = settings.arguments as Product;
         return _createRoute(TransactionDetailPage(product: product));

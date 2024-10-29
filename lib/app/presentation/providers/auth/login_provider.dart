@@ -37,6 +37,7 @@ class LoginProvider extends ChangeNotifier {
     if (!isValidate) {
       WDialog.snackbar(
         context,
+        title: 'Input tidak valid',
         type: SnackBarType.ERROR,
         message: 'Perhatikan kesalahan pada Form',
       );
@@ -66,17 +67,27 @@ class LoginProvider extends ChangeNotifier {
           ],
         );
       },
-      (_) {
+      (_) async {
         WDialog.closeLoading();
-        // get data
-        context.read<UserProvider>().getProfile();
-        context.read<ActivityProvider>().getActivity();
+
+        // action
         Navigator.pushNamedAndRemoveUntil(
           context,
           To.MAIN,
           (route) => false,
         );
-        WDialog.snackbar(context, message: 'Berhasil Masuk sebagai $email');
+        // WDialog.snackbar(
+        //   context,
+        //   title: 'Login berhasil',
+        //   message: 'Berhasil Masuk sebagai $email',
+        //   type: SnackBarType.NORMAL,
+        // );
+
+        // get data
+        await Future.wait([
+          context.read<UserProvider>().getProfile(),
+          context.read<ActivityProvider>().getActivity(),
+        ]);
       },
     );
   }

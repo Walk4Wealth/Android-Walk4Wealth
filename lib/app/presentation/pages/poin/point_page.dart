@@ -12,12 +12,17 @@ class PointPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final point = context.watch<UserProvider>().user?.totalPoints ?? 0;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: WAppBar(
-          title: 'Point Kamu $point',
+          //* total points
+          titleWidget: Consumer<UserProvider>(
+            builder: (ctx, c, _) =>
+                Text('Poin saya ${c.user?.totalPoints ?? 0}'),
+          ),
+
+          //* tabbar
           bottom: const WTabBar([
             Tab(text: 'Tukar Poin'),
             Tab(text: 'Reward Kamu'),

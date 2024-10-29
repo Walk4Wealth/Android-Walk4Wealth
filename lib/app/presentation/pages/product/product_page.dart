@@ -44,36 +44,7 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: WAppBar(
-        titleWidget: LayoutBuilder(builder: (_, size) {
-          return Consumer<ShopProvider>(
-            builder: (_, c, child) {
-              if (c.getProductByIdState == RequestState.SUCCESS) {
-                return Text(
-                  c.product?.name ?? '',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                );
-              } else {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey.shade300,
-                  highlightColor: Colors.grey.shade100,
-                  child: Container(
-                    width: size.maxWidth * 0.9,
-                    height: 15,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                  ),
-                );
-              }
-            },
-          );
-        }),
-      ),
+      appBar: WAppBar(titleWidget: _productName(context)),
       body: RefreshIndicator(
         onRefresh: () async => _loadData(),
         child: SingleChildScrollView(
@@ -90,13 +61,51 @@ class _ProductPageState extends State<ProductPage> {
           ),
         ),
       ),
+
+      //* product action button
+      // redem point
       bottomSheet: const ProductActionButton(),
     );
   }
 
+  Widget _productName(BuildContext context) {
+    return LayoutBuilder(builder: (_, size) {
+      return Consumer<ShopProvider>(
+        builder: (_, c, child) {
+          if (c.getProductByIdState == RequestState.SUCCESS) {
+            return Text(
+              c.product?.name ?? '',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+            );
+          } else {
+            return Shimmer.fromColors(
+              baseColor: Colors.grey.shade300,
+              highlightColor: Colors.grey.shade100,
+              child: Container(
+                width: size.maxWidth * 0.9,
+                height: 15,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+              ),
+            );
+          }
+        },
+      );
+    });
+  }
+
   Widget _errorState(String message) {
-    return Center(
-      child: Text(message),
+    return SizedBox(
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height - kBottomNavigationBarHeight,
+      child: Center(
+        child: Text(message),
+      ),
     );
   }
 

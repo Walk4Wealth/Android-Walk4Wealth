@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fpdart/fpdart.dart';
 
 import '../../core/error/failure.dart';
@@ -39,7 +37,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
       // save token to db
       await _localDatasource.saveToken(token);
-      log('token disimpan saaat login : ${token.token}');
 
       return right(null);
     } on AppException catch (e) {
@@ -67,7 +64,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
       // save token
       await _localDatasource.saveToken(token);
-      log('token disimpan saat register ${token.token}');
 
       return right(null);
     } on AppException catch (e) {
@@ -80,7 +76,6 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       // hapus token dan user dari local db
       await _localDatasource.deleteToken();
-      log('token, user, dan data cache sudah dihapus saat logout');
 
       return right(null);
     } on AppException catch (e) {

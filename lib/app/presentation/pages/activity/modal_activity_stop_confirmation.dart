@@ -24,34 +24,29 @@ class ModalActivityStopConfirmation extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text(
-              'Selesaikan Aktivitas',
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w600),
-            ),
+            //* modal title
+            // "Selesaikan Aktivitas"
+            _modalTitle(context),
             const SizedBox(height: 4),
-            Text(
-              'Apakah kamu yakin ingin menyelesaikan aktivitas ini?',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+
+            //* modal subtitle
+            // "Aktivitas kamu masih berjalan, tetapi apakah kamu yakin ingin menyelesaikan aktivitas ini?"
+            _modalSubtitle(context),
             const SizedBox(height: 8),
-            Expanded(
-              child: Image.asset(
-                AssetImg.onBoarding3,
-                width: double.infinity,
-                fit: BoxFit.contain,
-              ),
-            ),
+
+            //* stop asset
+            _stopAssets(),
+
+            //* stop subtitle
+            // "Berikut adalah pantauan sementara aktivitas kamu"
             Text(
               'Berikut adalah pantauan sementara aktivitas kamu',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 8),
+
+            //* containder preview activity
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
@@ -117,29 +112,69 @@ class ModalActivityStopConfirmation extends StatelessWidget {
             //* action button
             Row(
               children: [
-                Flexible(
-                  fit: FlexFit.tight,
-                  child: WButton(
-                    label: 'Lanjutkan Aktivitas',
-                    padding: 12,
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    type: ButtonType.OUTLINED,
-                    onPressed: resumeActivity,
-                  ),
-                ),
+                //* resume activity
+                _resumeActivityButton(context),
                 const SizedBox(width: 12),
-                WButton(
-                  label: 'Selesai',
-                  padding: 12,
-                  onPressed: stopActivity,
-                )
+
+                //* end activity
+                _endActivityButton()
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _stopAssets() {
+    return Expanded(
+      child: Image.asset(
+        AssetImg.onBoarding3,
+        width: double.infinity,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
+  Widget _modalSubtitle(BuildContext context) {
+    return Text(
+      'Aktivitas kamu masih berjalan, tetapi apakah kamu yakin ingin menyelesaikan aktivitas ini?',
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.bodyMedium,
+    );
+  }
+
+  Widget _modalTitle(BuildContext context) {
+    return Text(
+      'Selesaikan Aktivitas',
+      textAlign: TextAlign.center,
+      style: Theme.of(context)
+          .textTheme
+          .titleLarge
+          ?.copyWith(fontWeight: FontWeight.w600),
+    );
+  }
+
+  Widget _endActivityButton() {
+    return WButton(
+      label: 'Selesai',
+      padding: 12,
+      onPressed: stopActivity,
+    );
+  }
+
+  Widget _resumeActivityButton(BuildContext context) {
+    return Flexible(
+      fit: FlexFit.tight,
+      child: WButton(
+        label: 'Lanjut',
+        padding: 12,
+        icon: Icon(
+          Icons.arrow_back,
+          color: Theme.of(context).primaryColor,
+        ),
+        type: ButtonType.OUTLINED,
+        onPressed: resumeActivity,
       ),
     );
   }

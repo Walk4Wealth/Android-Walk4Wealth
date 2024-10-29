@@ -16,41 +16,49 @@ class ProductActionButton extends StatelessWidget {
       child: Row(
         children: [
           //* poin saya
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Consumer<UserProvider>(
-              builder: (_, c, child) {
-                return Text.rich(
-                  TextSpan(
-                    text: 'Poin Kamu ',
-                    children: [
-                      TextSpan(
-                        text: '\n${c.user?.totalPoints ?? 0}',
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                );
-              },
-            ),
-          ),
+          _myPoint(context),
 
           //* button reedem poin
-          Flexible(
-            fit: FlexFit.tight,
-            child: WButton(
-              expand: true,
-              label: 'Tukar Poin',
-              onPressed: () async {
-                context.read<TransactionProvider>().showReedemDialog(context);
-              },
-            ),
-          ),
+          _reedemButton(context),
         ],
+      ),
+    );
+  }
+
+  Widget _myPoint(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Consumer<UserProvider>(
+        builder: (_, c, child) {
+          return Text.rich(
+            TextSpan(
+              text: 'Poin Kamu ',
+              children: [
+                TextSpan(
+                  text: '\n${c.user?.totalPoints ?? 0}',
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              ],
+            ),
+            textAlign: TextAlign.center,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _reedemButton(BuildContext context) {
+    return Flexible(
+      fit: FlexFit.tight,
+      child: WButton(
+        expand: true,
+        label: 'Tukar Poin',
+        onPressed: () async {
+          context.read<TransactionProvider>().showReedemDialog(context);
+        },
       ),
     );
   }

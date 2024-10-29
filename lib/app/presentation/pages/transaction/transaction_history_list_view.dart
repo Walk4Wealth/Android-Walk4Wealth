@@ -1,15 +1,18 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../core/enums/request_state.dart';
-import '../../../core/routes/navigate.dart';
 import '../../../core/utils/components/to_top_button.dart';
-import '../../../core/utils/strings/asset_img_string.dart';
 import '../../providers/transaction_provider.dart';
+import '../../widgets/transaction_card.dart';
+
+/*
+
+VIEW INI DITAMPILKAN PADA HALAMAN POIN_PAGE
+
+*/
 
 class TransactionHistoryListView extends StatefulWidget {
   const TransactionHistoryListView({super.key});
@@ -28,7 +31,7 @@ class _TransactionHistoryListViewState
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+    _loadData();
   }
 
   @override
@@ -90,39 +93,7 @@ class _TransactionHistoryListViewState
       padding: const EdgeInsets.all(16),
       itemBuilder: (context, index) {
         final history = c.histories[index];
-        return ListTile(
-          tileColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          leading: CachedNetworkImage(
-            imageUrl: history.product.productImg ?? '',
-            errorWidget: (c, u, e) => Image.asset(AssetImg.error),
-            width: 50,
-            fit: BoxFit.cover,
-          ),
-          title: Text(
-            history.product.name ?? '',
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            DateFormat('dd/MM/yyyy HH:mm:ss a', 'id').format(
-              DateTime.parse(history.timeStamp),
-            ),
-          ),
-          titleTextStyle: Theme.of(context)
-              .textTheme
-              .titleMedium
-              ?.copyWith(fontWeight: FontWeight.w500),
-          trailing: Text('${history.product.pointsRequired ?? 0} Poin'),
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              To.TRANSACTION_DETAIL,
-              arguments: history.product,
-            );
-          },
-        );
+        return TransactionCard(history);
       },
     );
   }

@@ -16,9 +16,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<LoadProvider>().checkAuthentication(context);
-    });
+    context.read<LoadProvider>().checkAuthentication(context);
   }
 
   @override
@@ -30,7 +28,11 @@ class _SplashPageState extends State<SplashPage> {
         elevation: 0,
         shadowColor: Colors.transparent,
         backgroundColor: Colors.transparent,
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarBrightness: Brightness.dark,
+          statusBarIconBrightness: Brightness.dark,
+        ),
       ),
       body: SizedBox(
         width: double.infinity,
@@ -68,10 +70,9 @@ class _SplashPageState extends State<SplashPage> {
                       //* logo aplikasi
                       Image.asset(
                         AssetImg.logoW4wPrimary,
-                        width: 100,
-                        height: 100,
+                        width: 150,
+                        height: 150,
                         fit: BoxFit.contain,
-                        color: Colors.black,
                       ),
                       const SizedBox(height: 12),
 
@@ -85,8 +86,9 @@ class _SplashPageState extends State<SplashPage> {
                               ?.copyWith(fontWeight: FontWeight.bold),
                           children: [
                             TextSpan(
-                                text: '\nWalk For Wealth',
-                                style: Theme.of(context).textTheme.bodyMedium),
+                              text: '\nWalk4Wealth',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
                           ],
                         ),
                         textAlign: TextAlign.center,
@@ -97,8 +99,10 @@ class _SplashPageState extends State<SplashPage> {
               ),
 
               //* section 3 (app version)
-              Text('Version 1.0.0',
-                  style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                'Version 1.0.0',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ],
           ),
         ),

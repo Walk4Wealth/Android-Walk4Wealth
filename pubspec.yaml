@@ -1,5 +1,6 @@
 name: walk_for_wealth
-description: "A mobile app that tracks walking and running, rewarding users with points based on distance, which can be redeemed for products."
+description: "A mobile app that tracks walking and running, rewarding users with
+  points based on distance, which can be redeemed for products."
 publish_to: 'none'
 version: 0.1.0
 
@@ -17,6 +18,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_map: ^7.0.2
+  flutter_map_cancellable_tile_provider: ^3.0.2
   flutter_map_location_marker: ^9.1.1
   fpdart: ^1.1.0
   get_it: ^7.7.0
@@ -24,7 +26,8 @@ dependencies:
   image_picker: ^1.1.2
   intl: ^0.19.0
   latlong2: ^0.9.1
-  location: ^6.0.2
+  location: ^7.0.1
+  permission_handler: ^11.3.1
   provider: ^6.1.2
   shared_preferences: ^2.3.2
   shimmer: ^3.0.0
@@ -35,6 +38,7 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.1
 
 flutter:
   uses-material-design: true

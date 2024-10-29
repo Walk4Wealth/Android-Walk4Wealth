@@ -52,84 +52,28 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //* back arrow
-              Material(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(100),
-                child: InkWell(
-                  onTap: () {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  borderRadius: BorderRadius.circular(100),
-                  child: const Padding(
-                    padding: EdgeInsets.all(12),
-                    child: Icon(Icons.arrow_back),
-                  ),
-                ),
-              ),
+              _backArrow(context),
               const SizedBox(height: 16),
 
-              //* ilustrasi login
-              const Text(
-                'Masuk ke W4W',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              //*  login title
+              // "masuk ke W4W"
+              _loginTitle(),
               const SizedBox(height: 32),
 
               //* form
               Consumer<LoginProvider>(
-                builder: (_, c, child) {
+                builder: (ctx, c, _) {
                   return Form(
                     key: _formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        //* email
-                        WTextField(
-                          label: 'Email',
-                          validator: c.validate,
-                          hint: 'Masukan email anda',
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          onChanged: c.setEmail,
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).requestFocus(_passFNode);
-                          },
-                        ),
+                        //* input email
+                        _emailTextField(c, context),
                         const SizedBox(height: 24),
 
-                        //* password
-                        WTextField(
-                          label: 'Password',
-                          focusNode: _passFNode,
-                          obscureText: c.hidePassword,
-                          controller: _passController,
-                          hint: 'Masukan password anda',
-                          keyboardType: TextInputType.visiblePassword,
-                          suffix: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
-                            transitionBuilder: (chld, a) {
-                              return ScaleTransition(scale: a, child: chld);
-                            },
-                            child: GestureDetector(
-                              onTap: c.togglePassword,
-                              key: ValueKey<bool>(c.hidePassword),
-                              child: Icon(
-                                (c.hidePassword)
-                                    ? Iconsax.eye_slash
-                                    : Iconsax.eye,
-                              ),
-                            ),
-                          ),
-                          onChanged: c.setPassword,
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).unfocus();
-                          },
-                        ),
+                        //* input password
+                        _passwordTextField(c, context),
                       ],
                     ),
                   );
@@ -137,19 +81,93 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 24),
 
-              // button login
-              Consumer<LoginProvider>(
-                builder: (_, c, chld) {
-                  return WButton(
-                    expand: true,
-                    label: 'Login',
-                    onPressed:
-                        c.isValidSubmitted ? () => _login(context) : null,
-                  );
-                },
-              ),
+              //* button login
+              _loginButton(context),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _loginButton(BuildContext context) {
+    return Consumer<LoginProvider>(
+      builder: (ctx, c, _) {
+        return WButton(
+          expand: true,
+          label: 'Login',
+          onPressed: c.isValidSubmitted ? () => _login(context) : null,
+        );
+      },
+    );
+  }
+
+  Widget _passwordTextField(LoginProvider c, BuildContext context) {
+    return WTextField(
+      label: 'Password',
+      focusNode: _passFNode,
+      obscureText: c.hidePassword,
+      controller: _passController,
+      hint: 'Masukan password anda',
+      keyboardType: TextInputType.visiblePassword,
+      suffix: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (chld, a) {
+          return ScaleTransition(scale: a, child: chld);
+        },
+        child: GestureDetector(
+          onTap: c.togglePassword,
+          key: ValueKey<bool>(c.hidePassword),
+          child: Icon(
+            (c.hidePassword) ? Iconsax.eye_slash : Iconsax.eye,
+          ),
+        ),
+      ),
+      onChanged: c.setPassword,
+      onFieldSubmitted: (_) {
+        FocusScope.of(context).unfocus();
+      },
+    );
+  }
+
+  Widget _emailTextField(LoginProvider c, BuildContext context) {
+    return WTextField(
+      label: 'Email',
+      validator: c.validate,
+      hint: 'Masukan email anda',
+      controller: _emailController,
+      keyboardType: TextInputType.emailAddress,
+      onChanged: c.setEmail,
+      onFieldSubmitted: (_) {
+        FocusScope.of(context).requestFocus(_passFNode);
+      },
+    );
+  }
+
+  Widget _loginTitle() {
+    return const Text(
+      'Masuk ke W4W',
+      style: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _backArrow(BuildContext context) {
+    return Material(
+      color: Colors.grey.shade300,
+      borderRadius: BorderRadius.circular(100),
+      child: InkWell(
+        onTap: () {
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
+        },
+        borderRadius: BorderRadius.circular(100),
+        child: const Padding(
+          padding: EdgeInsets.all(12),
+          child: Icon(Icons.arrow_back),
         ),
       ),
     );

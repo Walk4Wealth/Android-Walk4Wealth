@@ -20,6 +20,7 @@ class Db {
 
   final TOKEN_KEY = '_token_key_';
   final USER_KEY = '_user_key_';
+  final IS_SHOW_TRACKING_ALERT_DIALOG_KEY = '_is_show_alert_dialog_key_';
 
   Future<void> set(String key, String value) async {
     try {

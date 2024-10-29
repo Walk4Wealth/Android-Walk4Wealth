@@ -65,45 +65,55 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
             ),
 
             //* dot indicator
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(3, (index) {
-                return AnimatedContainer(
-                  height: 8,
-                  width: (_currentView == index) ? 20 : 8,
-                  margin: const EdgeInsets.only(right: 8),
-                  duration: const Duration(milliseconds: 300),
-                  decoration: BoxDecoration(
-                    color: (_currentView == index)
-                        ? Colors.black54
-                        : Colors.black12,
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                );
-              }),
-            ),
+            _dotIndicator(),
             const SizedBox(height: 32),
 
             //* button register
-            WButton(
-              expand: true,
-              label: 'Join Sekarang',
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              onPressed: () => Navigator.pushNamed(context, To.REGISTER),
-            ),
+            _registerButton(context),
             const SizedBox(height: 12),
 
             //* button login
-            WButton(
-              expand: true,
-              label: 'Masuk',
-              type: ButtonType.OUTLINED,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              onPressed: () => Navigator.pushNamed(context, To.LOGIN),
-            ),
+            _loginbutton(context),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _dotIndicator() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(3, (index) {
+        return AnimatedContainer(
+          height: 8,
+          width: (_currentView == index) ? 20 : 8,
+          margin: const EdgeInsets.only(right: 8),
+          duration: const Duration(milliseconds: 300),
+          decoration: BoxDecoration(
+            color: (_currentView == index) ? Colors.black54 : Colors.black12,
+            borderRadius: BorderRadius.circular(50),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _loginbutton(BuildContext context) {
+    return WButton(
+      expand: true,
+      label: 'Masuk',
+      type: ButtonType.OUTLINED,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      onPressed: () => Navigator.pushNamed(context, To.LOGIN),
+    );
+  }
+
+  Widget _registerButton(BuildContext context) {
+    return WButton(
+      expand: true,
+      label: 'Join Sekarang',
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      onPressed: () => Navigator.pushNamed(context, To.REGISTER),
     );
   }
 }

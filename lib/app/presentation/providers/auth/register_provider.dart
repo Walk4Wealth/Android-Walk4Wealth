@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../activity_provider.dart';
-import '../user_provider.dart';
 import '../../../core/routes/navigate.dart';
 import '../../../core/utils/dialog/w_dialog.dart';
 import '../../../domain/usecases/auth/register_user.dart';
@@ -14,43 +11,56 @@ class RegisterProvider extends ChangeNotifier {
     required RegisterUser registerUser,
   }) : _registerUser = registerUser;
 
+  //! controller
   final _pageController = PageController();
-  PageController get pageController => _pageController;
-
   final _usernameController = TextEditingController();
-  TextEditingController get usernameController => _usernameController;
-
   final _emailController = TextEditingController();
-  TextEditingController get emailController => _emailController;
-
   final _passController = TextEditingController();
+
+  TextEditingController get emailController => _emailController;
+  TextEditingController get usernameController => _usernameController;
+  PageController get pageController => _pageController;
   TextEditingController get passController => _passController;
 
+  //! form key
+  final _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> get formKey => _formKey;
+
+  //! focus node (email & password)
+  final _emailFNode = FocusNode();
+  final _passFNode = FocusNode();
+
+  FocusNode get emailFNode => _emailFNode;
+  FocusNode get passFNode => _passFNode;
+
+  //! height & weight
+  int _currentHeight = 170; // in cm
+  int _currentWeight = 70; // in kg
+
+  int get currentHeight => _currentHeight;
+  int get currentWeight => _currentWeight;
+
+  //! temp form value
   String? _usernameValue;
   String? _emailValue;
   String? _passValue;
 
-  int _currentHeight = 170;
-  int get currentHeight => _currentHeight;
-
-  int _currentWeight = 70;
-  int get currentWeight => _currentWeight;
-
-  final _formKey = GlobalKey<FormState>();
-  GlobalKey<FormState> get formKey => _formKey;
-
-  final _emailFNode = FocusNode();
-  FocusNode get emailFNode => _emailFNode;
-
-  final _passFNode = FocusNode();
-  FocusNode get passFNode => _passFNode;
-
+  //! hide password toggle
   bool _hidePassword = true;
   bool get hidePassword => _hidePassword;
 
+  //! total view in register view page
+  // register / height / weight view
   int totalViews = 3;
   int _indexView = 0;
   int get indexView => _indexView;
+
+  //! is valid submitted
+  bool get isValidSubmitted {
+    return (_usernameValue != null) &&
+        (_emailValue != null) &&
+        (_passValue != null);
+  }
 
   @override
   void dispose() {
@@ -99,35 +109,29 @@ class RegisterProvider extends ChangeNotifier {
             ),
           ],
         );
-        _pageController.animateToPage(
-          0,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.ease,
-        );
+        movePage(0); // register view
       },
-      (_) {
+      (_) async {
         WDialog.closeLoading();
-        // get data
-        context.read<UserProvider>().getProfile();
-        context.read<ActivityProvider>().getActivity();
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          To.MAIN,
-          (route) => false,
-        );
-        WDialog.snackbar(
-          context,
-          seconds: 5,
-          message: 'Berhasil membuat akun dan masuk sebagai $email',
-        );
+
+        // action
+        if (context.mounted) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            To.LOGIN,
+            (route) => route.isFirst,
+          );
+          WDialog.snackbar(
+            context,
+            seconds: 5,
+            type: SnackBarType.NORMAL,
+            title: 'Registrasi berhasil',
+            message:
+                'Akun dengan email $email berhasil didaftarkan, silahkan login untuk melanjutkan',
+          );
+        }
       },
     );
-  }
-
-  bool get isValidSubmitted {
-    return (_usernameValue != null) &&
-        (_emailValue != null) &&
-        (_passValue != null);
   }
 
   String? validate(String? value, String title) {
@@ -181,6 +185,7 @@ class RegisterProvider extends ChangeNotifier {
     } else {
       WDialog.snackbar(
         context,
+        title: 'Input tidak valid',
         type: SnackBarType.ERROR,
         message: 'Perhatikan kesalahan pada Form',
       );
@@ -220,6 +225,14 @@ class RegisterProvider extends ChangeNotifier {
   void setWeight(dynamic height) {
     _currentWeight = height;
     notifyListeners();
+  }
+
+  void movePage(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.ease,
+    );
   }
 
   void nextPage() {

@@ -7,11 +7,20 @@ import 'register_height_view.dart';
 import 'register_view.dart';
 import 'register_weight_view.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  late BuildContext rootContext;
+
+  @override
   Widget build(BuildContext context) {
+    rootContext = context;
+
     return ChangeNotifierProvider(
       create: (_) => locator<RegisterProvider>(),
       child: Scaffold(
@@ -43,10 +52,10 @@ class RegisterPage extends StatelessWidget {
                       controller: c.pageController,
                       onPageChanged: c.setViewOnChanged,
                       physics: const NeverScrollableScrollPhysics(),
-                      children: const [
-                        RegisterView(),
-                        RegisterHeightView(),
-                        RegisterWeightView(),
+                      children: [
+                        const RegisterView(),
+                        const RegisterHeightView(),
+                        RegisterWeightView(rootContext),
                       ],
                     );
                   },

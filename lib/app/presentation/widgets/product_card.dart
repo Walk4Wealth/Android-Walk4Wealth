@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/routes/navigate.dart';
 import '../../core/utils/strings/asset_img_string.dart';
 import '../../domain/entity/product.dart';
 import '../providers/shop_provider.dart';
@@ -10,21 +11,30 @@ class ProductCard extends StatelessWidget {
   const ProductCard(
     this.product, {
     super.key,
-    this.onTap,
-    this.radius = 8.0,
   });
 
-  final double radius;
   final Product product;
-  final void Function()? onTap;
+
+  void _navigateToProductDetailPage(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      To.PRODUCT,
+      arguments: {
+        'product_id': product.id,
+        'vendor_id': product.vendorId,
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    double radius = 8.0;
+
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(radius),
       child: InkWell(
-        onTap: onTap,
+        onTap: () => _navigateToProductDetailPage(context),
         borderRadius: BorderRadius.circular(radius),
         child: Container(
           constraints: const BoxConstraints(
@@ -41,14 +51,13 @@ class ProductCard extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  //foto
                   Expanded(
                     child: Stack(
                       children: [
-                        // foto
-                        _productImage(size),
+                        //* foto produk
+                        _productImage(size.maxWidth, radius),
 
-                        // poin
+                        //* poin produk
                         Positioned(
                           top: 0,
                           right: 0,
@@ -68,14 +77,14 @@ class ProductCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // event berakhir berapa hari lagi
+                        //* expiration
                         _expiration(context),
 
-                        // nama produk
+                        //* nama produk
                         _productName(context),
                         const SizedBox(height: 2),
 
-                        // deksripsi produk
+                        //* deksripsi produk
                         _description(context),
                       ],
                     ),
@@ -141,9 +150,9 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _productImage(BoxConstraints size) {
+  Widget _productImage(double widh, double radius) {
     return SizedBox(
-      width: size.maxWidth,
+      width: widh,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radius),
         child: CachedNetworkImage(

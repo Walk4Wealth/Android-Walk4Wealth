@@ -7,6 +7,7 @@ import '../../../core/enums/tracking_state.dart';
 import '../../../core/routes/navigate.dart';
 import '../../../core/utils/dialog/w_dialog.dart';
 import '../../providers/tracking_provider.dart';
+import 'modal_activity_access_location_all_time.dart';
 import 'modal_activity_mode_selection.dart';
 import 'modal_activity_stop_confirmation.dart';
 
@@ -15,35 +16,7 @@ class ActivityActionButton extends StatelessWidget {
 
   final double height;
 
-  //* show alert dialog when app is first opened
-  void _showAlertDialog(BuildContext context, TrackingProvider c) {
-    if (c.isShowAlertDialog) {
-      WDialog.showDialog(
-        context,
-        icon: const Icon(Icons.warning_amber_rounded),
-        title: 'Sebelum memulai',
-        message:
-            'Aktivitas tracking membutuhkan layanan GPS dan koneksi internet yang aktif. Jika salah satu atau keduanya mati, aktivitas tracking akan dijeda secara otomatis hingga layanan tersebut kembali aktif.',
-        actions: [
-          DialogAction(
-            label: 'Mengerti',
-            isDefaultAction: true,
-            onPressed: () {
-              // set key
-              c.setKeyActivityAlertDialog();
-              Navigator.pop(context); // tutup dialog
-              _tracking(context, c);
-            },
-          ),
-        ],
-      );
-    } else {
-      // jika aplikasi sudah pernah menampilkan alert dialog maka akan langsung memulai tracking
-      _tracking(context, c);
-    }
-  }
-
-  //* start/pause tracking
+  //* start tracking
   void _tracking(BuildContext context, TrackingProvider c) {
     if (c.trackingState == TrackingState.INIT ||
         c.trackingState == TrackingState.STOP) {
@@ -55,38 +28,47 @@ class ActivityActionButton extends StatelessWidget {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         // pilih mode aktivitas kemudian start aktivitas
         builder: (context) => ModalActivityModeSelection(
-          cancelActivity: () => Navigator.pop(context),
+          cancelActivity: () {
+            Navigator.of(context).pop(); // tutup dialog
+            Navigator.of(context).pop(); // keluar halaman
+          },
           startActivity: () async {
-            await c.startTracking();
-            if (context.mounted) {
-              WDialog.activitySnackbar(context,
-                  c.trackingMessage ?? 'Aktivitas dimulai', c.trackingState);
+            if (c.isLocationAllowAllTime) {
+              await c.startTracking();
+              if (context.mounted) {
+                WDialog.activitySnackbar(context,
+                    c.trackingMessage ?? 'Aktivitas dimulai', c.trackingState);
+              }
+            } else {
+              // show modal bottom sheet allow location all time
+              showModalBottomSheet(
+                context: context,
+                enableDrag: false,
+                isDismissible: false,
+                builder: (context) {
+                  return ModalActivityAccessLocationAllTime(
+                    cancelActivity: () {
+                      Navigator.of(context).pop(); // tutup dialog
+                      Navigator.of(context).pop(); // keluar halaman
+                    },
+                    openAppSettings: () async {
+                      Navigator.of(context).pop(); // tutup dialog
+                      Navigator.of(context).pop(); // keluar halaman
+                      await c.openAppSettings();
+                    },
+                  );
+                },
+              );
             }
           },
         ),
       );
-      return;
-    }
-    //* pause tracking
-    if (c.trackingState == TrackingState.TRACK) {
-      c.pauseTracking();
-      WDialog.activitySnackbar(context, c.trackingMessage!, c.trackingState);
-      return;
-    }
-  }
-
-  //* resume tracking
-  _resume(BuildContext context, TrackingProvider c) {
-    if (c.trackingState == TrackingState.PAUSE) {
-      c.resumeTracking();
-      WDialog.activitySnackbar(context, c.trackingMessage!, c.trackingState);
-      return;
     }
   }
 
   //* stop tracking
   _stop(BuildContext context, TrackingProvider c) {
-    if (c.trackingState == TrackingState.PAUSE) {
+    if (c.trackingState == TrackingState.TRACK) {
       c.closePanel();
       c.calculateStep();
 
@@ -99,19 +81,19 @@ class ActivityActionButton extends StatelessWidget {
         // konfirmasi untuk menyelesaikan aktivitas
         builder: (context) => ModalActivityStopConfirmation(
           resumeActivity: () {
-            c.resumeTracking();
-            Navigator.pop(context); // tutup dialog
-            WDialog.activitySnackbar(
-                context, c.trackingMessage!, c.trackingState);
+            Navigator.pop(context); // tututp dialog
+            c.openPanel();
           },
-          stopActivity: () {
-            c.stopTracking();
-            Navigator.pop(context); // tutup dialog
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              To.ACTIVITY_SAVE,
-              (route) => route.isFirst,
-            );
+          stopActivity: () async {
+            await c.stopTracking();
+            if (context.mounted) {
+              Navigator.pop(context); // tutup dialog
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                To.ACTIVITY_SAVE,
+                (route) => route.isFirst,
+              );
+            }
           },
         ),
       );
@@ -120,7 +102,7 @@ class ActivityActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final heightButton = height - MediaQuery.of(context).padding.bottom;
+    double heightButton = height - 8;
 
     return Container(
       height: height,
@@ -129,86 +111,65 @@ class ActivityActionButton extends StatelessWidget {
       //* action button
       child: Consumer<TrackingProvider>(
         builder: (ctx, c, _) {
-          final disabled =
+          bool disabled =
               c.permissionState != LocationPermissionState.ALLOWED ||
                   c.getLocationState != GetLocationState.SUCCESS;
 
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (c.trackingState != TrackingState.PAUSE)
-                //* start/pause button
-                SizedBox(
-                  height: heightButton,
-                  child: ElevatedButton(
-                    onPressed:
-                        disabled ? null : () => _showAlertDialog(context, c),
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      shadowColor: Colors.transparent,
-                      shape: CircleBorder(
-                        side: BorderSide(
-                          color: disabled
-                              ? Colors.grey.shade700
-                              : Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      backgroundColor: c.trackingState == TrackingState.TRACK
-                          ? Colors.white
-                          : null,
-                    ),
-                    child: c.trackingState == TrackingState.TRACK
-                        ? Icon(
-                            Icons.pause,
-                            color: c.trackingState == TrackingState.TRACK
-                                ? Theme.of(context).primaryColor
-                                : null,
-                          )
-                        : const Text('Mulai'),
-                  ),
-                ),
-              if (c.trackingState == TrackingState.PAUSE)
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    //* resume button
-                    SizedBox(
-                      height: heightButton,
-                      child: ElevatedButton(
-                        onPressed: () async => _resume(context, c),
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          shape: const CircleBorder(),
-                        ),
-                        child: const Text('Lanjutkan'),
-                      ),
-                    ),
+              //* start button
+              if (c.trackingState == TrackingState.INIT)
+                _startButton(heightButton, disabled, context, c),
 
-                    //* stop button
-                    SizedBox(
-                      height: heightButton,
-                      child: ElevatedButton(
-                        onPressed: () async => _stop(context, c),
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          foregroundColor: Theme.of(context).primaryColor,
-                          backgroundColor: Colors.white,
-                          shape: CircleBorder(
-                            side: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                        ),
-                        child: const Text('Selesai'),
-                      ),
-                    ),
-                  ],
-                ),
+              //* stop button
+              if (c.trackingState == TrackingState.TRACK)
+                _stopButton(heightButton, context, c),
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _startButton(double heightButton, bool disabled, BuildContext context,
+      TrackingProvider c) {
+    return SizedBox(
+      height: heightButton,
+      child: ElevatedButton(
+        onPressed: disabled ? null : () => _tracking(context, c),
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: CircleBorder(
+            side: BorderSide(
+              color: disabled
+                  ? Colors.grey.shade700
+                  : Theme.of(context).primaryColor,
+            ),
+          ),
+          backgroundColor:
+              c.trackingState == TrackingState.TRACK ? Colors.white : null,
+        ),
+        child: const Text('Mulai'),
+      ),
+    );
+  }
+
+  Widget _stopButton(
+      double heightButton, BuildContext context, TrackingProvider c) {
+    return SizedBox(
+      height: heightButton,
+      child: ElevatedButton(
+        onPressed: () async => _stop(context, c),
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          shape: const CircleBorder(),
+          backgroundColor: Colors.red,
+          foregroundColor: Colors.white,
+          shadowColor: Colors.transparent,
+        ),
+        child: const Text('Stop'),
       ),
     );
   }

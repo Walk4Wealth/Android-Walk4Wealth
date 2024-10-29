@@ -26,10 +26,10 @@ class _MainPageState extends State<MainPage> {
   void _pageOnTap(int page) {
     // halaman aktivitas berada di index ke-1 dari navbar
     if (page == 1) {
-      // Jika index 1, push halaman Activity
+      // jika index 1, push halaman Activity
       Navigator.pushNamed(context, To.ACTIVITY);
     } else {
-      // Jika bukan halaman aktivitas
+      // jika bukan halaman aktivitas
       setState(() => _selectedPage = page);
     }
   }
@@ -40,50 +40,59 @@ class _MainPageState extends State<MainPage> {
       body: _pages[_selectedPage],
       bottomNavigationBar: Stack(
         children: [
-          BottomNavigationBar(
-            elevation: 0,
-            onTap: _pageOnTap,
-            currentIndex: _selectedPage,
-            backgroundColor: Colors.white,
-            selectedLabelStyle: const TextStyle(fontSize: 14),
-            unselectedLabelStyle: const TextStyle(fontSize: 14),
-            type: BottomNavigationBarType.fixed,
-            items: const [
-              BottomNavigationBarItem(
-                label: 'Beranda',
-                icon: Icon(Iconsax.home),
-                activeIcon: Icon(Iconsax.home5),
-              ),
-              BottomNavigationBarItem(
-                label: 'Aktivitas',
-                icon: Icon(Iconsax.record_circle),
-              ),
-              BottomNavigationBarItem(
-                label: 'Poin',
-                icon: Icon(Iconsax.gift),
-                activeIcon: Icon(Iconsax.gift5),
-              ),
-              BottomNavigationBarItem(
-                label: 'Profil',
-                icon: Icon(Iconsax.profile_circle),
-                activeIcon: Icon(Iconsax.profile_circle5),
-              ),
-            ],
-          ),
+          //* bottom nav bar
+          _bottomNavBar(),
 
-          // divider
+          //* divider
           Positioned(
             top: 0,
             right: 16,
             left: 16,
-            child: Container(
-              width: MediaQuery.of(context).size.width - 32,
-              color: Colors.grey,
-              height: 0.5,
-            ),
+            child: _dividerEffect(context),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _dividerEffect(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width - 32,
+      color: Colors.grey,
+      height: 0.5,
+    );
+  }
+
+  Widget _bottomNavBar() {
+    return BottomNavigationBar(
+      elevation: 0,
+      onTap: _pageOnTap,
+      currentIndex: _selectedPage,
+      backgroundColor: Colors.white,
+      selectedLabelStyle: const TextStyle(fontSize: 14),
+      unselectedLabelStyle: const TextStyle(fontSize: 14),
+      type: BottomNavigationBarType.fixed,
+      items: const [
+        BottomNavigationBarItem(
+          label: 'Beranda',
+          icon: Icon(Iconsax.home),
+          activeIcon: Icon(Iconsax.home5),
+        ),
+        BottomNavigationBarItem(
+          label: 'Aktivitas',
+          icon: Icon(Iconsax.record_circle),
+        ),
+        BottomNavigationBarItem(
+          label: 'Poin',
+          icon: Icon(Iconsax.gift),
+          activeIcon: Icon(Iconsax.gift5),
+        ),
+        BottomNavigationBarItem(
+          label: 'Profil',
+          icon: Icon(Iconsax.profile_circle),
+          activeIcon: Icon(Iconsax.profile_circle5),
+        ),
+      ],
     );
   }
 }

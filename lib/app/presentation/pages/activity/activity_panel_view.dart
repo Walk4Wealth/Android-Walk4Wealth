@@ -17,38 +17,11 @@ class ActivityPanelView extends StatelessWidget {
           builder: (ctx, c, _) {
             return Column(
               children: [
-                //* waktu
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(
-                        'WAKTU',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: Colors.grey.shade600),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        c.stringTimer,
-                        style: Theme.of(context)
-                            .textTheme
-                            .displaySmall
-                            ?.copyWith(fontSize: 30),
-                      ),
-                    ],
-                  ),
-                ),
+                //* duration
+                _duration(context, c),
                 const SizedBox(height: 16),
 
-                //* jarak tempuh
+                //* jarak tempuh // distance
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -60,99 +33,152 @@ class ActivityPanelView extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'JARAK TEMPUH',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: Colors.grey.shade600),
-                        ),
-                        Text(
-                          NumberFormat('#,###').format(c.mileage.toInt()),
-                          style: Theme.of(context)
-                              .textTheme
-                              .displayMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          'METER',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: Colors.grey.shade600),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${c.mileage / 1000}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.grey.shade700),
-                              ),
-                              const SizedBox(width: 16),
-                              Text('KM',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(color: Colors.grey.shade600)),
-                            ],
-                          ),
-                        ),
+                        //* jarak tempuh in meters
+                        _distanceInMeters(context, c),
+
+                        //* jarak tempuh in kilometer
+                        _distanceInKm(context, c),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                //* kecepatan
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(
-                        'KECEPATAN',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: Colors.grey.shade600),
-                      ),
-                      Text(
-                        c.speed.toStringAsFixed(2),
-                        style: Theme.of(context)
-                            .textTheme
-                            .displaySmall
-                            ?.copyWith(fontSize: 30),
-                      ),
-                      Text(
-                        'KM/H',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: Colors.grey.shade600),
-                      )
-                    ],
-                  ),
-                ),
+                //* kecepatan // speed
+                _speed(context, c),
               ],
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _duration(BuildContext context, TrackingProvider c) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Text(
+            'WAKTU',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            c.stringTimer,
+            style: Theme.of(context)
+                .textTheme
+                .displaySmall
+                ?.copyWith(fontSize: 30),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _distanceInMeters(BuildContext context, TrackingProvider c) {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text(
+            'JARAK TEMPUH',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.grey.shade600),
+          ),
+          Text(
+            NumberFormat('#,###').format(c.mileage.toInt()),
+            style: Theme.of(context)
+                .textTheme
+                .displayMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'METER',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.grey.shade600),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _distanceInKm(BuildContext context, TrackingProvider c) {
+    final double distanceInKm = c.mileage / 1000;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            distanceInKm.toStringAsFixed(2),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade700,
+                ),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            'KM',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey.shade600,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _speed(BuildContext context, TrackingProvider c) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Text(
+            'KECEPATAN',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.grey.shade600),
+          ),
+          Text(
+            c.speed.toStringAsFixed(2),
+            style: Theme.of(context)
+                .textTheme
+                .displaySmall
+                ?.copyWith(fontSize: 30),
+          ),
+          Text(
+            'KM/H',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.grey.shade600),
+          )
+        ],
       ),
     );
   }

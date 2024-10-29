@@ -6,7 +6,9 @@ import '../../../core/utils/components/w_button.dart';
 import '../../providers/auth/register_provider.dart';
 
 class RegisterWeightView extends StatelessWidget {
-  const RegisterWeightView({super.key});
+  const RegisterWeightView(this.rootContext, {super.key});
+
+  final BuildContext rootContext;
 
   @override
   Widget build(BuildContext context) {
@@ -15,72 +17,95 @@ class RegisterWeightView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FittedBox(
-            child: RichText(
-              text: const TextSpan(
-                text: 'Berapa Berat Kamu ',
-                style: TextStyle(
-                  fontSize: 32,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-                children: [
-                  TextSpan(
-                    text: '(Kg)',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.black45,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          //* weight title
+          // "Berapa berat kamu"
+          _weightTitle(),
           const SizedBox(height: 32),
 
-          // slider number
-          SizedBox(
-            height: 400,
-            child: Consumer<RegisterProvider>(
-              builder: (_, c, child) {
-                return WheelChooser.integer(
-                  onValueChanged: (weight) => c.setWeight(weight),
-                  maxValue: 200,
-                  minValue: 40,
-                  initValue: c.currentWeight,
-                  selectTextStyle: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              },
-            ),
-          ),
+          //* slider number (pilih berat badan)
+          _weightSlider(),
           const SizedBox(height: 16),
 
-          // button previous
+          //* action button
           Row(
             children: [
-              WButton(
-                label: '',
-                type: ButtonType.OUTLINED,
-                onPressed: context.read<RegisterProvider>().previousPage,
-                child: const Icon(Icons.arrow_back),
-              ),
+              //* previous
+              _previousButton(context),
               const SizedBox(width: 16),
-              Flexible(
-                child: WButton(
-                  expand: true,
-                  label: 'Selesai',
-                  onPressed: () {
-                    context.read<RegisterProvider>().register(context);
-                  },
-                ),
-              ),
+
+              //* register
+              _registerButton(context),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _weightTitle() {
+    return FittedBox(
+      child: RichText(
+        text: const TextSpan(
+          text: 'Berapa Berat Kamu ',
+          style: TextStyle(
+            fontSize: 32,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+          children: [
+            TextSpan(
+              text: '(Kg)',
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.black45,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _weightSlider() {
+    return SizedBox(
+      height: 400,
+      child: Consumer<RegisterProvider>(
+        builder: (_, c, child) {
+          return WheelChooser.integer(
+            onValueChanged: (weight) => c.setWeight(weight),
+            maxValue: 200,
+            minValue: 40,
+            initValue: c.currentWeight,
+            selectTextStyle: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _registerButton(BuildContext context) {
+    return Flexible(
+      child: WButton(
+        expand: true,
+        label: 'Register',
+        onPressed: () {
+          context.read<RegisterProvider>().register(rootContext);
+        },
+      ),
+    );
+  }
+
+  Widget _previousButton(BuildContext context) {
+    return WButton(
+      label: '',
+      type: ButtonType.OUTLINED,
+      onPressed: () {
+        context.read<RegisterProvider>().previousPage();
+      },
+      child: const Icon(Icons.arrow_back),
     );
   }
 }

@@ -19,43 +19,39 @@ class ActivityCard extends StatelessWidget {
   final bool isLast;
   final bool isOne;
 
+  void _navigateToActivityDetailPage(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      To.ACTIVITY_DETAIL,
+      arguments: activity,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final radius = isOne
+    BorderRadius radius = isOne
         ? BorderRadius.circular(8)
         : BorderRadius.vertical(
             top: isFirst ? const Radius.circular(8) : Radius.zero,
             bottom: isLast ? const Radius.circular(8) : Radius.zero,
           );
-    final mileageInKm = (activity.mileage ?? 0) / 1000;
+    double mileageInKm = (activity.mileage ?? 0) / 1000;
 
     return Material(
       color: Colors.white,
       borderRadius: radius,
       //* navigasi ke halaman detail aktivitas
       child: InkWell(
-        onTap: () => Navigator.pushNamed(
-          context,
-          To.ACTIVITY_DETAIL,
-          arguments: activity,
-        ),
+        onTap: () => _navigateToActivityDetailPage(context),
         borderRadius: radius,
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Row(
                 children: [
-                  //* foto
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.blue.shade50,
-                    child: Image.asset(
-                      (activity.activityId == 1)
-                          ? AssetImg.walking
-                          : AssetImg.running,
-                    ),
-                  ),
+                  //* foto aktivitas
+                  _imageActivity(),
                   const SizedBox(width: 24),
 
                   //* data
@@ -65,59 +61,28 @@ class ActivityCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        //* tanggal
-                        Text(
-                          DateFormat('dd MMMM', 'id').format(
-                            DateTime.parse(activity.dateTime ?? ''),
-                          ),
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: Colors.grey.shade600),
-                        ),
+                        //* tanggal aktivitas
+                        _dateTime(context),
                         const SizedBox(height: 8),
 
                         //* jarak tempuh (meter)
-                        Text(
-                          '${NumberFormat('#,###').format(activity.mileage)} meter',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
+                        _distanceImMeters(context),
                         const SizedBox(height: 8),
 
                         Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             //* jarak tempuh (kilometer)
-                            Text(
-                              '${mileageInKm.toStringAsFixed(1)} km',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(color: Colors.grey.shade600),
-                            ),
-                            const SizedBox(width: 16),
+                            _distanceInKm(mileageInKm, context),
 
                             //* kalori
-                            Text(
-                              '${activity.caloriesBurn} kal',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(color: Colors.grey.shade600),
-                            ),
-                            const SizedBox(width: 16),
+                            _calories(context),
 
-                            //* mode
-                            Text(
-                              activity.mode?.name ?? '',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(color: Colors.grey.shade600),
-                            ),
+                            //* mode aktivitas
+                            _activityMode(context),
+
+                            //* poin yang didapatkan
+                            _pointEarned(context),
                           ],
                         ),
                       ],
@@ -125,7 +90,7 @@ class ActivityCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 24),
 
-                  //* icon
+                  //* icon forward
                   const Icon(Icons.arrow_forward_ios, color: Colors.grey),
                 ],
               ),
@@ -141,6 +106,62 @@ class ActivityCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _imageActivity() {
+    return CircleAvatar(
+      radius: 30,
+      backgroundColor: Colors.blue.shade50,
+      child: Image.asset(
+        (activity.activityId == 1) ? AssetImg.walking : AssetImg.running,
+      ),
+    );
+  }
+
+  Widget _dateTime(BuildContext context) {
+    return Text(
+      DateFormat('dd MMMM yyyy', 'id').format(
+        DateTime.parse(activity.dateTime ?? '').toLocal(),
+      ),
+      style: Theme.of(context).textTheme.bodySmall,
+    );
+  }
+
+  Widget _distanceImMeters(BuildContext context) {
+    return Text(
+      '${NumberFormat('#,###').format(activity.mileage)} meter',
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+    );
+  }
+
+  Widget _distanceInKm(double mileageInKm, BuildContext context) {
+    return Text(
+      '${mileageInKm.toStringAsFixed(1)} km',
+      style: Theme.of(context).textTheme.bodySmall,
+    );
+  }
+
+  Widget _calories(BuildContext context) {
+    return Text(
+      '${activity.caloriesBurn} kal',
+      style: Theme.of(context).textTheme.bodySmall,
+    );
+  }
+
+  Widget _activityMode(BuildContext context) {
+    return Text(
+      activity.mode?.name ?? '',
+      style: Theme.of(context).textTheme.bodySmall,
+    );
+  }
+
+  Widget _pointEarned(BuildContext context) {
+    return Text(
+      '${activity.pointsEarned ?? 0} Poin',
+      style: Theme.of(context).textTheme.bodySmall,
     );
   }
 }

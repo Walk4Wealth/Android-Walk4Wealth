@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import '../../core/enums/request_state.dart';
@@ -121,13 +119,11 @@ class ShopProvider extends ChangeNotifier {
     // state
     allVendor.fold(
       (failure) {
-        log('semua data vendor gagal di get');
         _getAllVendorState = RequestState.FAILURE;
         _errorMessage = failure.message;
         notifyListeners();
       },
       (vendors) {
-        log('semua data vendor berhasil di get');
         _getAllVendorState = RequestState.SUCCESS;
         _vendors = vendors;
         notifyListeners();
@@ -147,13 +143,11 @@ class ShopProvider extends ChangeNotifier {
     // state
     vendorById.fold(
       (failure) {
-        log('data vendor by id gagal di get');
         _getVendorByIdState = RequestState.FAILURE;
         _errorMessage = failure.message;
         notifyListeners();
       },
       (vendor) {
-        log('data vendor ${vendor.name} berhasil di get');
         _getVendorByIdState = RequestState.SUCCESS;
         _vendor = vendor;
         notifyListeners();
@@ -173,13 +167,11 @@ class ShopProvider extends ChangeNotifier {
     // state
     allProduct.fold(
       (failure) {
-        log('semua data product gagal di get');
         _getAllProductState = RequestState.FAILURE;
         _errorMessage = failure.message;
         notifyListeners();
       },
       (products) {
-        log('semua data product berhasil di get');
         _getAllProductState = RequestState.SUCCESS;
         _products = products;
         notifyListeners();
@@ -199,13 +191,11 @@ class ShopProvider extends ChangeNotifier {
     // state
     productById.fold(
       (failure) {
-        log('data product by id gagal di get');
         _getProductByIdState = RequestState.FAILURE;
         _errorMessage = failure.message;
         notifyListeners();
       },
       (product) {
-        log('data product ${_product?.name ?? '-'} berhasil di get');
         _getProductByIdState = RequestState.SUCCESS;
         _product = product;
         notifyListeners();

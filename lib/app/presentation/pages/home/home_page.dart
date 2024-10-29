@@ -35,17 +35,17 @@ class HomePage extends StatelessWidget {
           //* aktivitas terkini
           Consumer<TrackingProvider>(
             builder: (ctx, c, _) {
-              if (c.trackingState == TrackingState.INIT ||
-                  c.trackingState == TrackingState.STOP) {
-                return const SizedBox.shrink();
+              if (c.trackingState == TrackingState.TRACK) {
+                return const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    HomeCurrentActivity(),
+                    SizedBox(height: 16),
+                  ],
+                );
+              } else {
+                return const SizedBox();
               }
-              return const Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  HomeCurrentActivity(),
-                  SizedBox(height: 16),
-                ],
-              );
             },
           ),
 

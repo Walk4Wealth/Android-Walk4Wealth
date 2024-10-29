@@ -47,6 +47,7 @@ class App extends StatelessWidget {
       child: ChangeNotifierProvider(
         create: (_) => locator<LoadProvider>(),
         child: MaterialApp(
+          title: 'Walk For Wealth',
           theme: WTheme.theme,
           themeMode: WTheme.themeMode,
           navigatorKey: navigatorKey,

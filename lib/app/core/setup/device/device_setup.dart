@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class DeviceSetup {
@@ -6,7 +5,6 @@ class DeviceSetup {
 
   static void setup() {
     _setOrientation();
-    setStatusBarStyle();
   }
 
   static void _setOrientation() {
@@ -14,13 +12,5 @@ class DeviceSetup {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-  }
-
-  static void setStatusBarStyle() {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
-    ));
   }
 }

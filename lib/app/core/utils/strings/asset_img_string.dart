@@ -9,7 +9,7 @@ class AssetImg {
   static const logoApple = 'assets/img/logo-apple.png';
   static const logoUdinus = 'assets/img/logo-udinus.png';
   static const logoBima = 'assets/img/logo-bima.png';
-  static const logoW4wPrimary = 'assets/img/logo-w4w-primary.png';
+  static const logoW4wPrimary = 'assets/img/logo-w4w.png';
 
   static const reedemPoint = 'assets/img/reedem-point.png';
   static const reedemPointError = 'assets/img/reedem-point-error.png';
@@ -17,9 +17,15 @@ class AssetImg {
   static const noProfile = 'assets/img/no-profile.png';
   static const error = 'assets/img/error.png';
 
+  static const iconFire = 'assets/img/icon-fire.png';
+  static const iconCoin = 'assets/img/icon-coin.png';
+
   static const walking = 'assets/img/walking.png';
   static const running = 'assets/img/running.png';
   static const sad = 'assets/img/sad.png';
+
+  static const accessLocationAllTime =
+      'assets/img/access-location-all-time.png';
 
   static const activitySaved = 'assets/gif/activity-saved.gif';
 }
