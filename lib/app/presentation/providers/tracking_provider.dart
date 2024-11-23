@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
@@ -56,7 +57,7 @@ class TrackingProvider extends ChangeNotifier {
 
   //! tracking threshold (max speed & distance)
   final double _maxSpeed = 21.0; // km/h
-  final double _distanceThreshold = 30.0; //in meters
+  final double _distanceThreshold = 50.0; //in meters
 
   //! step per meter walking & running (estimate)
   final double _stepPerMeterWalking = 1.35; // in meters
@@ -67,9 +68,17 @@ class TrackingProvider extends ChangeNotifier {
   bool _isInternetActive = true;
   bool _isGPSActive = true;
 
+  //! countdown timer
+  // saat memulai tracking maka akan ada hitung mundur
+  int _countdown = 3;
+  bool _isCountingDown = false;
+
+  int get countdown => _countdown;
+  bool get isCountingDown => _isCountingDown;
+
   //! timer
-  Timer? _timer;
   int _seconds = 0;
+  Timer? _timer;
 
   //! tracking time & duration
   DateTime get currentDate => DateTime.now();
@@ -120,6 +129,64 @@ class TrackingProvider extends ChangeNotifier {
   //* init map controller
   void initMapController(MapController controller) {
     _mapController = controller;
+  }
+
+  ////! ======[ COUNTDOWN TIMER DIALOG ]====== ////
+
+  //* show countdown dialog // before tracking
+  void startCountdown(
+    BuildContext context,
+    VoidCallback startTracking,
+  ) async {
+    // reset countdown
+    _countdown = 3;
+    _isCountingDown = true;
+    notifyListeners();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.transparent,
+      builder: (context) {
+        if (_countdown == 3) {
+          _countdownCounter(context, startTracking);
+        }
+        return PopScope(
+          canPop: false,
+          child: Consumer<TrackingProvider>(builder: (ctx, c, _) {
+            const color = Colors.transparent;
+            const padding = EdgeInsets.zero;
+
+            return AlertDialog(
+              shadowColor: color,
+              titlePadding: padding,
+              actionsPadding: padding,
+              buttonPadding: padding,
+              contentTextStyle: Theme.of(context).textTheme.displayMedium,
+              content: Text(
+                c.countdown.toString(),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }),
+        );
+      },
+    );
+  }
+
+  void _countdownCounter(
+    BuildContext context,
+    VoidCallback startTracking,
+  ) async {
+    while (_countdown > 0) {
+      await Future.delayed(const Duration(seconds: 1));
+      _countdown--;
+      notifyListeners();
+    }
+    if (context.mounted) {
+      Navigator.of(context).pop(); // tutup dialog countdown
+      startTracking(); // tracking callback
+    }
   }
 
   ////! ======[ HANDLE CHEATING ]====== ////
@@ -298,7 +365,7 @@ class TrackingProvider extends ChangeNotifier {
 
   //* start timer
   void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       _seconds++;
       notifyListeners();
     });
@@ -311,7 +378,7 @@ class TrackingProvider extends ChangeNotifier {
 
   //* resume timer
   void _resumeTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       _seconds++;
       notifyListeners();
     });

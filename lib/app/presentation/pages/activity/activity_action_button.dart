@@ -34,11 +34,16 @@ class ActivityActionButton extends StatelessWidget {
           },
           startActivity: () async {
             if (c.isLocationAllowAllTime) {
-              await c.startTracking();
-              if (context.mounted) {
-                WDialog.activitySnackbar(context,
-                    c.trackingMessage ?? 'Aktivitas dimulai', c.trackingState);
-              }
+              c.startCountdown(context, () async {
+                await c.startTracking();
+                if (context.mounted) {
+                  WDialog.activitySnackbar(
+                    context,
+                    c.trackingMessage ?? 'Aktivitas dimulai',
+                    c.trackingState,
+                  );
+                }
+              });
             } else {
               // show modal bottom sheet allow location all time
               showModalBottomSheet(
